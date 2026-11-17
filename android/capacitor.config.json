@@ -1,0 +1,11 @@
+{
+  "appId": "xyz.sakura.dsbeta",
+  "appName": "DeepSeek Beta",
+  "webDir": "../web/dist",
+  "server": { "androidScheme": "https" },
+  "android": {
+    "backgroundColor": "#ffffff",
+    "adjustMarginsForEdgeToEdge": "auto",
+    "allowMixedContent": false
+  }
+}

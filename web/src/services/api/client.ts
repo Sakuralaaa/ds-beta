@@ -195,3 +195,33 @@ export async function* streamMessage(
   // 服务端没有提供错误内容时保持为空，不推测断流原因。
   throw new ApiError('interrupted', '')
 }
+
+/**
+ * 接口不返回标题（如管理员中转站不支持 title 参数）时，单独请求一次短标题。
+ * 失败返回空字符串，由调用方回退为提问前几个字。
+ */
+export const generateTitle = async (apiKey: string, model: string, question: string, answer: string): Promise<string> => {
+  const custom = activeEndpoint()
+  try {
+    const response = await request(`${anthropicBase()}/messages`, {
+      method: 'POST',
+      headers: { ...anthropicHeaders(apiKey, false), 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: custom?.model || model,
+        max_tokens: 40,
+        ...(custom ? {} : { thinking: { type: 'disabled' } }),
+        messages: [
+          {
+            role: 'user',
+            content: `为下面这段对话起一个简短的标题（不超过 15 个字，和提问同一种语言，不要引号和句号，只输出标题）。\n\n用户：${question.slice(0, 1000)}\n\n助手：${answer.slice(0, 1000)}`,
+          },
+        ],
+      }),
+    })
+    const data = (await response.json()) as { content?: { type: string; text?: string }[] }
+    const text = (data.content ?? []).filter((b) => b.type === 'text').map((b) => b.text ?? '').join('')
+    return text.replace(/^["'“”「」《》\s]+|["'“”「」《》。.\s]+$/g, '').split('\n')[0].slice(0, 30)
+  } catch {
+    return ''
+  }
+}

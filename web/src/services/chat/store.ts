@@ -2,7 +2,7 @@ import { isInlineId } from '../api/inlineFiles.js'
 import { activeEndpoint } from '../account/endpoint.js'
 import { create } from 'zustand'
 import { createId } from '../../utils/id.js'
-import { ApiError, streamMessage } from '../api/client.js'
+import { ApiError, generateTitle, streamMessage } from '../api/client.js'
 import type { ChatModel, CreateMessageRequest } from '../api/types.js'
 import { extractFileIds, getFileErrorCode, isRetryableApiError } from '../api/errors.js'
 import { cancelUpload, describeUploadError, uploadAttachment, useUploads } from '../attachments.js'
@@ -20,6 +20,7 @@ import { createLatestReminder } from './latestReminder.js'
 import {
   applyEvent,
   canContinueReply,
+  getReplyText,
   getContextRounds,
   settleReply,
   toRequestMessages,
@@ -758,6 +759,16 @@ export const retryUpload = (sessionId: string, messageId: string) => {
 
 type Request = { history: Message[]; question: UserMessage; prefix?: AssistantMessage }
 
+/** 接口没给标题时补一个：先请求短标题，失败再用提问前 20 个字 */
+const fallbackTitle = async (sessionId: string, question: string, answer: string, model: string) => {
+  if (getSession(sessionId)?.title) return
+  const apiKey = useSettings.getState().apiKey ?? ''
+  const generated = apiKey ? await generateTitle(apiKey, model, question, answer) : ''
+  const title = generated || question.replace(/\s+/g, ' ').trim().slice(0, 20)
+  if (!title || getSession(sessionId)?.title) return
+  renameSession(sessionId, title)
+}
+
 /** 把补传得到的 serverId 写回会话里所有引用同一附件的消息（编辑、重新生成会共用附件） */
 const saveServerIds = (sessionId: string, serverIds: Map<string, string>) => {
   if (serverIds.size === 0) {
@@ -1089,7 +1100,11 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
       }
     }
   } finally {
+    const needTitle = titleRequests.has(controller)
     titleRequests.delete(controller)
+    if (needTitle && reply.status === 'done' && !get().importingHistory) {
+      void fallbackTitle(sessionId, request.question.content, getReplyText(reply), initial.model ?? MODEL)
+    }
     streamFlushes.delete(sessionId)
     cancelAnimationFrame(frame)
     updateReply(sessionId, reply)

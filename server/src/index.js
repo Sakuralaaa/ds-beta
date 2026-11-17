@@ -116,7 +116,7 @@ const server = createServer(async (req, res) => {
   // 安卓 App（Capacitor）跨域访问；鉴权走 Bearer，不用 Cookie，因此可放开来源
   res.setHeader('access-control-allow-origin', '*')
   res.setHeader('access-control-allow-headers', 'authorization, content-type')
-  res.setHeader('access-control-allow-methods', 'GET, POST, PUT, DELETE, OPTIONS')
+  res.setHeader('access-control-allow-methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
   if (req.method === 'OPTIONS') { res.writeHead(204); return res.end() }
   const { pathname } = new URL(req.url, 'http://x')
   try {
