@@ -26,6 +26,7 @@ import {
   setThemePreference,
   setTtsVoice,
   setAutoCollapseThinking,
+  setFontStep,
   useSettings,
   type ThemePreference,
 } from '../../services/settings.js'
@@ -69,6 +70,65 @@ const SettingsContent = () => {
   const historyDelete = useHistoryDelete()
   const replacingHistory = useChatStore((state) => state.importingHistory)
   const historyBusy = historyImport.busy || historyDelete.busy || replacingHistory
+  const [appPage, setAppPage] = useState<null | 'account' | 'data' | 'general' | 'font'>(
+    () => (section === 'general' ? null : section)
+  )
+  if (__DSX_APP__) {
+    const title =
+      appPage === 'account' ? '账号管理' : appPage === 'data' ? '数据管理' : appPage === 'general' ? '通用' : appPage === 'font' ? '字体大小' : '设置'
+    return (
+      <>
+        <div className={styles.appPage}>
+          <div className={styles.appPageHeader}>
+            <button
+              type="button"
+              className={styles.appBack}
+              aria-label="返回"
+              onClick={() => (appPage && !historyDelete.busy ? setAppPage(null) : !historyDelete.busy && closeSettings())}
+            >
+              <svg viewBox="0 0 16 16" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M10 3.5L5.5 8l4.5 4.5" /></svg>
+            </button>
+            <div className={styles.appPageTitle}>{title}</div>
+          </div>
+          <div className={styles.appPageBody}>
+            {appPage === null ? (
+              <AppSettingsHome onOpen={setAppPage} />
+            ) : appPage === 'account' ? (
+              <AccountSettings />
+            ) : appPage === 'font' ? (
+              <FontSizePage />
+            ) : appPage === 'general' ? (
+              <>
+                <ThemeSetting />
+                <LocaleSetting />
+                <TtsVoiceSetting />
+                <AutoCollapseSetting />
+                <LocationSetting />
+              </>
+            ) : (
+              <>
+                <ApiKeyField editor={apiKeyEditor} />
+                <ImportHistory historyImport={historyImport} disabled={historyBusy} />
+                <ExportHistory disabled={historyBusy} />
+                <SettingCell
+                  label={t('deleteAllSessions')}
+                  status={null}
+                  action={
+                    <Button variant="dangerOutlined" size="m" className={styles.cellButton} disabled={historyBusy} onClick={historyDelete.open}>
+                      {t('delete')}
+                    </Button>
+                  }
+                />
+                <ApiKeyConfirm editor={apiKeyEditor} />
+              </>
+            )}
+          </div>
+        </div>
+        {historyImport.file ? <ImportConfirm historyImport={historyImport} /> : null}
+        {historyDelete.opened ? <DeleteAllConfirm historyDelete={historyDelete} /> : null}
+      </>
+    )
+  }
   return (
     <>
       <Modal
@@ -630,5 +690,86 @@ const ExportHistory = ({ disabled }: { disabled: boolean }) => {
         </Button>
       }
     />
+  )
+}
+
+const Chevron = () => (
+  <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M6 3.5L10.5 8 6 12.5" /></svg>
+)
+
+/** APK：官方 App 设置首页（分组卡片列表） */
+const AppSettingsHome = ({ onOpen }: { onOpen: (page: 'account' | 'data' | 'general' | 'font') => void }) => {
+  const theme = useSettings((s) => s.themePreference)
+  const locale = useSettings((s) => s.locale)
+  const themeLabel = theme === 'dark' ? '深色' : theme === 'light' ? '浅色' : '跟随系统'
+  const groups: { title: string; rows: { label: string; icon: ReactNode; value?: string; page?: 'account' | 'data' | 'general' | 'font' }[] }[] = [
+    { title: '账户', rows: [
+      { label: '账号管理', icon: <IconAccountOutline16 />, page: 'account' },
+      { label: '数据管理', icon: <IconDataOutline16 />, page: 'data' },
+    ] },
+    { title: '应用', rows: [
+      { label: '语言', icon: <IconSettingsOutline16 />, value: String(locale).startsWith('en') ? 'English' : '中文 (简体中文)', page: 'general' },
+      { label: '外观', icon: <IconDarkOutline16 />, value: themeLabel, page: 'general' },
+      { label: '字体大小', icon: <span style={{ fontSize: 13, fontWeight: 600 }}>AA</span>, page: 'font' },
+      { label: '个性化', icon: <IconFollowsystemOutline16 />, page: 'general' },
+    ] },
+    { title: '语音', rows: [{ label: '朗读音色', icon: <IconLightOutline16 />, page: 'general' }] },
+    { title: '关于', rows: [{ label: '版本', icon: <IconUploadOutline14 />, value: 'Beta' }] },
+  ]
+  return (
+    <>
+      {groups.map((g) => (
+        <div key={g.title}>
+          <div className={styles.appGroupTitle}>{g.title}</div>
+          <div className={styles.appGroup}>
+            {g.rows.map((r) => (
+              <button key={r.label} type="button" className={styles.appRow} onClick={() => r.page && onOpen(r.page)}>
+                <span className={styles.appRowIcon}>{r.icon}</span>
+                <span className={styles.appRowLabel}>{r.label}</span>
+                {r.value ? <span className={styles.appRowValue}>{r.value}</span> : null}
+                {r.page ? <Chevron /> : null}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+
+/** APK：字体大小（跟随系统 + 7 档滑块，第 3 档为标准） */
+const FontSizePage = () => {
+  const step = useSettings((s) => s.fontStep)
+  const follow = step === null
+  const value = step ?? 2
+  return (
+    <div className={styles.fontPage}>
+      <div className={styles.fontPreview} data-dsx-zoom>
+        <div className={styles.fontBubble}>预览文字大小</div>
+        <p>你可以拖动滑块来调整字体大小。</p>
+        <p>如果在使用过程中存在问题或建议，可反馈给 DeepSeek 团队。</p>
+      </div>
+      <div className={styles.fontPanel}>
+        <label className={styles.fontFollow}>
+          <span>跟随系统</span>
+          <input type="checkbox" checked={follow} onChange={(e) => setFontStep(e.target.checked ? null : 2)} />
+        </label>
+        <div className={styles.fontScale} aria-disabled={follow}>
+          <span style={{ fontSize: 14 }}>A</span>
+          <span className={styles.fontStd}>标准</span>
+          <span style={{ fontSize: 22 }}>A</span>
+        </div>
+        <input
+          className={styles.fontRange}
+          type="range"
+          min={0}
+          max={6}
+          step={1}
+          value={value}
+          disabled={follow}
+          onChange={(e) => setFontStep(Number(e.target.value))}
+        />
+      </div>
+    </div>
   )
 }

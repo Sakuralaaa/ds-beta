@@ -323,7 +323,6 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
       ) : null}
       {dragging ? <DragMask /> : null}
     </div>
-    {__DSX_APP__ && sessionId ? <div className={styles.appCaveat}>回答由 AI 生成，仅供参考</div> : null}
     </>
   )
 }

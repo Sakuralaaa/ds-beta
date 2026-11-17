@@ -35,7 +35,7 @@ export const groupSessions = (
     if (last?.key === groupKey) {
       last.sessions.push(session)
     } else {
-      groups.push({ key: groupKey, label: key ? t(key) : groupKey, sessions: [session] })
+      groups.push({ key: groupKey, label: key ? t(key) : __DSX_APP__ ? groupKey.replace(/^(\d+)-0?(\d+)$/, '$1年$2月') : groupKey, sessions: [session] })
     }
   }
   return groups

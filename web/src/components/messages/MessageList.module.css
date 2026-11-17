@@ -35,3 +35,24 @@
   margin: 0 auto;
   padding-bottom: 24px;
 }
+
+.downWrap {
+  position: relative;
+  height: 0;
+  z-index: 5;
+}
+.downButton {
+  position: absolute;
+  right: 16px;
+  bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid var(--dsw-alias-border-l2, rgba(0, 0, 0, 0.1));
+  border-radius: 50%;
+  background: var(--dsw-alias-bg-base, #fff);
+  color: var(--dsw-alias-label-primary, #333);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}

@@ -9,6 +9,20 @@ import styles from './Welcome.module.css'
 export const Welcome = () => {
   const t = useTranslate()
   const isMobile = useIsMobile()
+  if (__DSX_APP__) {
+    return (
+      <div className={styles.container}>
+        <MobileHeader />
+        <div className={styles.appWelcome}>
+          <WhaleLogo size={44} />
+          <div className={styles.appGreeting}>{t('welcomeMessageMobile')}</div>
+        </div>
+        <div className={styles.appBottom}>
+          <ChatInput sessionId={null} />
+        </div>
+      </div>
+    )
+  }
   return (
     <div className={styles.container}>
       {isMobile ? <MobileHeader /> : null}

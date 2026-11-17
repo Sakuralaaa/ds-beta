@@ -1,4 +1,23 @@
 declare const styles: {
+  readonly "appPage": string;
+  readonly "appPageHeader": string;
+  readonly "appBack": string;
+  readonly "appPageTitle": string;
+  readonly "appPageBody": string;
+  readonly "appGroupTitle": string;
+  readonly "appGroup": string;
+  readonly "appRow": string;
+  readonly "appRowIcon": string;
+  readonly "appRowLabel": string;
+  readonly "appRowValue": string;
+  readonly "fontPage": string;
+  readonly "fontPreview": string;
+  readonly "fontBubble": string;
+  readonly "fontPanel": string;
+  readonly "fontFollow": string;
+  readonly "fontScale": string;
+  readonly "fontStd": string;
+  readonly "fontRange": string;
   readonly "apiKey": string;
   readonly "apiKeyGuide": string;
   readonly "apiKeyGuideLink": string;

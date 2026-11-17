@@ -136,6 +136,9 @@ export const setAutoCollapseThinking = (autoCollapseThinking: boolean) => {
   useSettings.setState({ autoCollapseThinking })
 }
 
+/** 官方 App 字体大小 7 档，第 3 档为「标准」 */
+export const FONT_SCALES = [0.86, 0.93, 1, 1.08, 1.16, 1.25, 1.35]
+
 export const setFontStep = (fontStep: number | null) => {
   write(KEYS.fontStep, fontStep === null ? null : String(fontStep))
   useSettings.setState({ fontStep })

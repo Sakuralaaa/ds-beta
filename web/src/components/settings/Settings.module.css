@@ -524,3 +524,133 @@
     transform: translateX(16px);
   }
 }
+
+/* ===== APK 全屏设置页 ===== */
+.appPage {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  background: var(--dsw-alias-bg-base, #fff);
+  color: var(--dsw-alias-label-primary, #111);
+}
+.appPageHeader {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 52px;
+  flex-shrink: 0;
+}
+.appBack {
+  position: absolute;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 50%;
+  background: var(--dsw-alias-bg-secondary, rgba(0, 0, 0, 0.05));
+  color: inherit;
+}
+.appPageTitle {
+  font-size: 17px;
+  font-weight: 500;
+}
+.appPageBody {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 16px calc(24px + env(safe-area-inset-bottom));
+}
+.appGroupTitle {
+  padding: 16px 4px 8px;
+  font-size: 13px;
+  color: var(--dsw-alias-label-tertiary, #888);
+}
+.appGroup {
+  overflow: hidden;
+  border-radius: 14px;
+  background: var(--dsw-alias-bg-secondary, rgba(0, 0, 0, 0.04));
+}
+.appRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  height: 52px;
+  padding: 0 16px;
+  border: none;
+  background: transparent;
+  color: inherit;
+  font-size: 16px;
+  text-align: left;
+}
+.appRowIcon {
+  display: flex;
+  width: 20px;
+  justify-content: center;
+}
+.appRowLabel {
+  flex: 1;
+}
+.appRowValue {
+  color: var(--dsw-alias-label-tertiary, #888);
+  font-size: 15px;
+}
+.fontPage {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+.fontPreview {
+  flex: 1;
+  font-size: 16px;
+  line-height: 1.75;
+}
+.fontBubble {
+  width: fit-content;
+  margin: 12px 0 16px auto;
+  padding: 8px 16px;
+  border-radius: 18px;
+  background: var(--dsw-alias-bg-secondary, rgba(0, 0, 0, 0.05));
+}
+.fontPanel {
+  margin: 0 -16px;
+  padding: 16px 20px 24px;
+  border-radius: 20px 20px 0 0;
+  background: var(--dsw-alias-bg-secondary, rgba(0, 0, 0, 0.04));
+}
+.fontFollow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 20px;
+  font-size: 16px;
+}
+.fontFollow input {
+  width: 22px;
+  height: 22px;
+  accent-color: #4d6bfe;
+}
+.fontScale {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+}
+.fontScale[aria-disabled='true'] {
+  opacity: 0.4;
+}
+.fontStd {
+  margin-right: auto;
+  margin-left: 18%;
+  font-size: 13px;
+}
+.fontRange {
+  width: 100%;
+  margin-top: 10px;
+  accent-color: #4d6bfe;
+}

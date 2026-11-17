@@ -114,6 +114,7 @@ export const MessageList = ({
     [session.id, streaming]
   )
 
+  const [showDown, setShowDown] = useState(false)
   // 跨移动端断点时切换滚动层，并保持输入框及当前阅读位置。
   useLayoutEffect(() => {
     const el = scrollRef.current
@@ -128,6 +129,7 @@ export const MessageList = ({
     const onScroll = () => {
       const nearBottom = el.scrollHeight - el.scrollTop - el.clientHeight < STICKY_THRESHOLD
       // 仅在用户向上滚动时停止跟随底部，布局或内容增高时保持跟随状态。
+      setShowDown(!nearBottom)
       if (nearBottom) {
         stickyRef.current = true
       } else if (el.scrollTop < scrollTopRef.current) {
@@ -145,7 +147,7 @@ export const MessageList = ({
     <ScrollToBottomContext.Provider value={scrollToBottom}>
       <div ref={isMobile ? undefined : scrollRef} className={styles.container} data-message-list>
         <div ref={isMobile ? scrollRef : undefined} className={styles.scroll}>
-          <div ref={contentRef} className={styles.column}>
+          <div ref={contentRef} className={styles.column} data-dsx-zoom>
             {messages.map((message, index) =>
               message.role === 'user' ? (
                 <UserMessage
@@ -174,6 +176,13 @@ export const MessageList = ({
             )}
           </div>
         </div>
+        {__DSX_APP__ && showDown ? (
+          <div className={styles.downWrap}>
+            <button type="button" className={styles.downButton} aria-label="回到底部" onClick={() => { stickyRef.current = true; scrollToBottom() }}>
+              <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M4 6l4 4 4-4" /></svg>
+            </button>
+          </div>
+        ) : null}
         {footer}
       </div>
     </ScrollToBottomContext.Provider>
