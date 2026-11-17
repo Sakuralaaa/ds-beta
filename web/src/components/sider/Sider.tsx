@@ -1,7 +1,20 @@
 import clsx from 'clsx'
 import { useEffect, useMemo, useState } from 'react'
 import { useTranslate } from '../../i18n/index.js'
-import { IconPanelLeftOutline16, IconSettingsOutline16, NewChatIcon } from '../base/icons.js'
+import {
+  IconCloseOutline16,
+  IconEllipsisOutline16,
+  IconLogoutOutline16,
+  IconMultiSelectOutline16,
+  IconPanelLeftOutline16,
+  IconSearchOutline16,
+  IconSettingsOutline16,
+  IconShieldOutline16,
+  IconTrashOutline16,
+  NewChatIcon,
+} from '../base/icons.js'
+import { Menu } from '../base/Menu.js'
+import { SessionSearch } from './SessionSearch.js'
 import { setSiderCollapsed } from '../../services/settings.js'
 import { groupSessions } from '../../services/chat/sessionGroups.js'
 import { newChat, removeSession, useChatStore } from '../../services/chat/store.js'
@@ -11,7 +24,7 @@ import { IconButton } from '../base/IconButton.js'
 import { Modal } from '../base/Modal.js'
 import { showToast } from '../base/toastState.js'
 import { openSettings } from '../settings/settingsDialogState.js'
-import { useAccount } from '../../services/account/account.js'
+import { signOut, useAccount } from '../../services/account/account.js'
 import { openAdmin } from '../admin/AdminPanel.js'
 import { closeMobileSider, useMobileSider } from './mobileSiderState.js'
 import { SessionItem } from './SessionItem.js'
@@ -23,7 +36,16 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   const t = useTranslate()
   const sessions = useChatStore((state) => state.sessions)
   const activeId = useChatStore((state) => state.activeId)
-  const isAdmin = useAccount((state) => !!state.user?.isAdmin)
+  const user = useAccount((state) => state.user)
+  const isAdmin = !!user?.isAdmin
+  const [searching, setSearching] = useState(false)
+  const [selecting, setSelecting] = useState(false)
+  const [selected, setSelected] = useState<Set<string>>(new Set())
+  const [batchDeleting, setBatchDeleting] = useState(false)
+  const exitSelect = () => {
+    setSelecting(false)
+    setSelected(new Set())
+  }
   const [now, setNow] = useState(Date.now)
   const groups = useMemo(() => groupSessions(sessions, now, t), [sessions, now, t])
   const [deleting, setDeleting] = useState<SessionSummary | null>(null)
@@ -59,6 +81,16 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
         <div className={styles.appName}>
           <WhaleLogo size={28} withWordmark />
         </div>
+        <div className={styles.topSpacer} />
+        {selecting ? null : (
+          <IconButton
+            size="m"
+            icon={<IconSearchOutline16 />}
+            tooltip={t('searchSessions')}
+            tooltipPlacement="bottom"
+            onClick={() => setSearching(true)}
+          />
+        )}
         <IconButton
           size="m"
           icon={<IconPanelLeftOutline16 />}
@@ -67,6 +99,14 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
           onClick={() => (mobile ? closeMobileSider() : setSiderCollapsed(true))}
         />
       </div>
+      {selecting ? (
+        <div className={styles.selectHeader}>
+          <span>{t('selectSessions')}</span>
+          <button type="button" className={styles.selectClose} aria-label={t('cancel')} onClick={exitSelect}>
+            <IconCloseOutline16 />
+          </button>
+        </div>
+      ) : (
       <button
         type="button"
         className={styles.newChat}
@@ -80,42 +120,123 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
         </span>
         {t('newChat')}
       </button>
+      )}
       <div className={styles.listWrap}>
         <div className={styles.list}>
-          {groups.map((group) => (
+          {groups.map((group, index) => (
             <div key={group.key} className={styles.section}>
-              <div className={styles.sectionHeader}>{group.label}</div>
-              {group.sessions.map((session) => (
+              <div className={styles.sectionHeader}>
+                {group.label}
+                {index === 0 && !selecting ? (
+                  <IconButton
+                    icon={<IconMultiSelectOutline16 />}
+                    tooltip={t('batchManage')}
+                    tooltipPlacement="bottom"
+                    className={styles.sectionAction}
+                    onClick={() => setSelecting(true)}
+                  />
+                ) : null}
+              </div>
+              {group.sessions.map((session) =>
+                selecting ? (
+                  <button
+                    key={session.id}
+                    type="button"
+                    className={clsx(styles.selectItem, selected.has(session.id) && styles.selectItemOn)}
+                    onClick={() =>
+                      setSelected((prev) => {
+                        const next = new Set(prev)
+                        if (next.has(session.id)) next.delete(session.id)
+                        else next.add(session.id)
+                        return next
+                      })
+                    }
+                  >
+                    <span className={styles.checkbox} />
+                    <span className={styles.selectTitle}>{session.title || t('untitledChat')}</span>
+                  </button>
+                ) : (
                 <SessionItem
                   key={session.id}
                   session={session}
                   active={session.id === activeId}
                   onDelete={() => setDeleting(session)}
                 />
-              ))}
+                )
+              )}
             </div>
           ))}
         </div>
       </div>
-      <div className={styles.bottom}>
-        {isAdmin ? (
-          <button type="button" className={styles.settings} onClick={openAdmin}>
-            <span className={styles.settingsIcon}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
-                <path d="M8 1.75 2.75 3.9v3.6c0 3 2.2 5.6 5.25 6.75 3.05-1.15 5.25-3.75 5.25-6.75V3.9L8 1.75Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
-                <path d="m5.75 8 1.6 1.6 2.9-3.1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </span>
-            <span className={styles.settingsLabel}>管理后台</span>
+      {selecting ? (
+        <div className={styles.selectBar}>
+          <button
+            type="button"
+            className={styles.selectBarButton}
+            disabled={!selected.size}
+            onClick={() => setBatchDeleting(true)}
+          >
+            <IconTrashOutline16 />
+            {t('delete')}
           </button>
-        ) : null}
-        <button type="button" className={styles.settings} onClick={() => openSettings('general')}>
-          <span className={styles.settingsIcon}>
-            <IconSettingsOutline16 />
-          </span>
-          <span className={styles.settingsLabel}>{t('settings')}</span>
-        </button>
-      </div>
+        </div>
+      ) : (
+        <div className={styles.bottom}>
+          <Menu
+            options={[
+              ...(isAdmin
+                ? [{ key: 'admin', label: t('menuAdmin'), icon: <IconShieldOutline16 />, onSelect: () => { closeMobileSider(); openAdmin() } }]
+                : []),
+              { key: 'settings', label: t('systemSettings'), icon: <IconSettingsOutline16 />, onSelect: () => openSettings('general') },
+              { key: 'logout', label: t('menuLogout'), icon: <IconLogoutOutline16 />, onSelect: () => void signOut() },
+            ]}
+          >
+            {({ open, toggle }) => (
+              <button type="button" className={clsx(styles.userRow, open && styles.userRowOpen)} onClick={toggle}>
+                <span className={styles.avatar}>{(user?.username ?? '?').slice(0, 1).toUpperCase()}</span>
+                <span className={styles.userName}>{user?.username}</span>
+                <span className={styles.userMore}>
+                  <IconEllipsisOutline16 />
+                </span>
+              </button>
+            )}
+          </Menu>
+        </div>
+      )}
+      {searching ? <SessionSearch sessions={sessions} onClose={() => setSearching(false)} /> : null}
+      {batchDeleting ? (
+        <Modal
+          title={t('deleteSelectedTitle', { count: selected.size })}
+          onClose={() => !deletePending && setBatchDeleting(false)}
+          footer={
+            <>
+              <Button variant="outlined" disabled={deletePending} onClick={() => setBatchDeleting(false)}>
+                {t('cancel')}
+              </Button>
+              <Button
+                variant="danger"
+                disabled={deletePending}
+                onClick={async () => {
+                  setDeletePending(true)
+                  try {
+                    for (const id of selected) {
+                      if (!(await removeSession(id))) showToast({ key: 'sessionDeleteFailed', type: 'error' })
+                    }
+                    setBatchDeleting(false)
+                    exitSelect()
+                  } finally {
+                    setDeletePending(false)
+                  }
+                }}
+              >
+                {t('delete')}
+              </Button>
+            </>
+          }
+        >
+          {t('deleteSessionWithFilesDescription')}
+        </Modal>
+      ) : null}
       {deleting ? (
         <Modal
           title={t('deleteSessionModalContentTitle')}

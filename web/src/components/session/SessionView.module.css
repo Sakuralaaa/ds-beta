@@ -68,3 +68,7 @@
     padding-bottom: env(safe-area-inset-bottom);
   }
 }
+
+.headerSpacer {
+  flex: 1;
+}

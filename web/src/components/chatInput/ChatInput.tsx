@@ -228,6 +228,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
           </Tooltip>
         </div>
         <div className={styles.right}>
+          {isMobile ? (
           <VoiceButton
             status={voice.status}
             disabled={!voice.available}
@@ -241,6 +242,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
               }
             }}
           />
+          ) : null}
           <IconButton
             size="m"
             tone="primary"

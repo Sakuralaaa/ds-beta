@@ -1,7 +1,17 @@
 import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
-import { memo } from 'react'
-import { IconRefreshOutline16, IconWarningOutline16 } from '../base/icons.js'
+import { memo, useState } from 'react'
+import {
+  IconRefreshOutline16,
+  IconShareOutline16,
+  IconThumbDownFill16,
+  IconThumbDownOutline16,
+  IconThumbUpFill16,
+  IconThumbUpOutline16,
+  IconWarningOutline16,
+} from '../base/icons.js'
+import { showToast } from '../base/toastState.js'
+import { shareText } from '../../utils/share.js'
 import { describeReply } from '../../services/chat/describe.js'
 import { canContinueReply } from '../../services/chat/reply.js'
 import { continueReply, regenerateReply } from '../../services/chat/store.js'
@@ -143,9 +153,6 @@ export const AssistantMessage = memo(function AssistantMessage({
           <BranchSwitcher versions={versions} disabled={busy} onSelect={onSelectVersion} />
           <div className={clsx(styles.actions, isLast && styles.alwaysShow)}>
             {copyText ? <CopyButton text={copyText} /> : null}
-            {responseText && !refused ? (
-              <ReadAloudButton messageId={message.id} text={responseText} />
-            ) : null}
             <IconButton
               icon={<IconRefreshOutline16 />}
               tooltip={t('regenerate')}
@@ -156,6 +163,18 @@ export const AssistantMessage = memo(function AssistantMessage({
                 regenerateReply(sessionId, message.id)
               }}
             />
+            {responseText && !refused ? <FeedbackButtons messageId={message.id} /> : null}
+            {responseText && !refused ? (
+              <ReadAloudButton messageId={message.id} text={responseText} />
+            ) : null}
+            {responseText ? (
+              <IconButton
+                icon={<IconShareOutline16 />}
+                tooltip={t('share')}
+                tooltipPlacement="bottom"
+                onClick={() => void shareText(responseText)}
+              />
+            ) : null}
           </div>
           {isLast && canContinueReply(message) ? (
             <Button
@@ -176,3 +195,47 @@ export const AssistantMessage = memo(function AssistantMessage({
     </div>
   )
 })
+
+const FEEDBACK_KEY = 'dsx:feedback'
+const readFeedback = (): Record<string, 'up' | 'down'> => {
+  try {
+    return JSON.parse(localStorage.getItem(FEEDBACK_KEY) ?? '{}')
+  } catch {
+    return {}
+  }
+}
+
+/** 点赞/点踩：只在本机记录（官方会回传给服务端，这里不收集任何数据） */
+const FeedbackButtons = ({ messageId }: { messageId: string }) => {
+  const t = useTranslate()
+  const [value, setValue] = useState<'up' | 'down' | undefined>(() => readFeedback()[messageId])
+  const set = (next: 'up' | 'down') => {
+    const all = readFeedback()
+    const v = value === next ? undefined : next
+    if (v) all[messageId] = v
+    else delete all[messageId]
+    try {
+      localStorage.setItem(FEEDBACK_KEY, JSON.stringify(all))
+    } catch {
+      // 忽略
+    }
+    setValue(v)
+    if (v) showToast({ key: 'feedbackThanks' })
+  }
+  return (
+    <>
+      <IconButton
+        icon={value === 'up' ? <IconThumbUpFill16 /> : <IconThumbUpOutline16 />}
+        tooltip={t('like')}
+        tooltipPlacement="bottom"
+        onClick={() => set('up')}
+      />
+      <IconButton
+        icon={value === 'down' ? <IconThumbDownFill16 /> : <IconThumbDownOutline16 />}
+        tooltip={t('dislike')}
+        tooltipPlacement="bottom"
+        onClick={() => set('down')}
+      />
+    </>
+  )
+}

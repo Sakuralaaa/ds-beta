@@ -523,3 +523,47 @@ export const IconToastError16 = () => (
     />
   </svg>
 )
+
+export const IconThumbUpOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M4.75 6.75v6.5M4.75 6.75 7.4 1.9a1.35 1.35 0 0 1 2.5.9l-.4 2.95h3.3a1.5 1.5 0 0 1 1.47 1.8l-.95 4.5a1.5 1.5 0 0 1-1.47 1.2H4.75m0-6.5h-1.9a.8.8 0 0 0-.8.8v4.9c0 .44.36.8.8.8h1.9" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+  </svg>
+)
+export const IconThumbDownOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ transform: 'rotate(180deg)' }}>
+    <path d="M4.75 6.75v6.5M4.75 6.75 7.4 1.9a1.35 1.35 0 0 1 2.5.9l-.4 2.95h3.3a1.5 1.5 0 0 1 1.47 1.8l-.95 4.5a1.5 1.5 0 0 1-1.47 1.2H4.75m0-6.5h-1.9a.8.8 0 0 0-.8.8v4.9c0 .44.36.8.8.8h1.9" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+  </svg>
+)
+export const IconThumbUpFill16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M4.75 6.75 7.4 1.9a1.35 1.35 0 0 1 2.5.9l-.4 2.95h3.3a1.5 1.5 0 0 1 1.47 1.8l-.95 4.5a1.5 1.5 0 0 1-1.47 1.2H4.75v-6.5Zm0 0h-1.9a.8.8 0 0 0-.8.8v4.9c0 .44.36.8.8.8h1.9" fill="currentColor" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+  </svg>
+)
+export const IconThumbDownFill16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true" style={{ transform: 'rotate(180deg)' }}>
+    <path d="M4.75 6.75 7.4 1.9a1.35 1.35 0 0 1 2.5.9l-.4 2.95h3.3a1.5 1.5 0 0 1 1.47 1.8l-.95 4.5a1.5 1.5 0 0 1-1.47 1.2H4.75v-6.5Zm0 0h-1.9a.8.8 0 0 0-.8.8v4.9c0 .44.36.8.8.8h1.9" fill="currentColor" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+  </svg>
+)
+export const IconShareOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M9.25 2.75 14.25 7.5l-5 4.75V9.5c-3.6 0-5.9 1.05-7.5 3.75.45-3.9 2.55-6.95 7.5-7.3V2.75Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+  </svg>
+)
+export const IconMultiSelectOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <circle cx="3.5" cy="4.25" r="1.75" stroke="currentColor" strokeWidth="1.2" />
+    <path d="m1.9 11.3 1.2 1.2 2.1-2.3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
+    <path d="M8 4.25h6.25M8 11.25h6.25" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" />
+  </svg>
+)
+export const IconLogoutOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M6.5 2.25H3.75a1.5 1.5 0 0 0-1.5 1.5v8.5a1.5 1.5 0 0 0 1.5 1.5H6.5M10.5 5l3 3-3 3M13.25 8H6" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)
+export const IconShieldOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M8 1.75 2.75 3.9v3.6c0 3 2.2 5.6 5.25 6.75 3.05-1.15 5.25-3.75 5.25-6.75V3.9L8 1.75Z" stroke="currentColor" strokeWidth="1.25" strokeLinejoin="round" />
+    <path d="m5.75 8 1.6 1.6 2.9-3.1" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
+  </svg>
+)

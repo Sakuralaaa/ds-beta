@@ -17,6 +17,10 @@ type Settings = {
   thinking: boolean
   search: boolean
   siderCollapsed: boolean
+  /** 置顶的会话 id（按置顶先后，新的在前） */
+  pinned: string[]
+  /** 字体缩放档位 -1..4（0 为标准）；null 跟随系统 */
+  fontStep: number | null
 }
 
 const KEYS = {
@@ -28,6 +32,8 @@ const KEYS = {
   thinking: 'chat-demo:thinking',
   search: 'chat-demo:search',
   siderCollapsed: 'chat-demo:sider-collapsed',
+  pinned: 'dsx:pinned',
+  fontStep: 'dsx:font-step',
 } as const
 
 const read = (key: string) => {
@@ -96,7 +102,35 @@ export const useSettings = create<Settings>(() => ({
   thinking: read(KEYS.thinking) === 'true',
   search: read(KEYS.search) === 'true',
   siderCollapsed: read(KEYS.siderCollapsed) === 'true',
+  pinned: (() => {
+    try {
+      const v = JSON.parse(read(KEYS.pinned) ?? '[]')
+      return Array.isArray(v) ? v.filter((x) => typeof x === 'string') : []
+    } catch {
+      return []
+    }
+  })(),
+  fontStep: (() => {
+    const v = read(KEYS.fontStep)
+    return v === null || v === '' ? null : Number(v)
+  })(),
 }))
+
+export const setPinned = (pinned: string[]) => {
+  write(KEYS.pinned, JSON.stringify(pinned))
+  useSettings.setState({ pinned })
+}
+
+export const togglePinned = (ids: string[]) => {
+  const current = useSettings.getState().pinned
+  const allPinned = ids.every((id) => current.includes(id))
+  setPinned(allPinned ? current.filter((id) => !ids.includes(id)) : [...ids.filter((id) => !current.includes(id)), ...current])
+}
+
+export const setFontStep = (fontStep: number | null) => {
+  write(KEYS.fontStep, fontStep === null ? null : String(fontStep))
+  useSettings.setState({ fontStep })
+}
 
 export const setLocale = (locale: Locale) => {
   write(KEYS.locale, locale)

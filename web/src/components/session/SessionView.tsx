@@ -5,6 +5,9 @@ import type { Session } from '../../services/chat/types.js'
 import { ChatInput } from '../chatInput/ChatInput.js'
 import { MessageList } from '../messages/MessageList.js'
 import { MobileHeader } from './MobileHeader.js'
+import { IconButton } from '../base/IconButton.js'
+import { IconShareOutline16 } from '../base/icons.js'
+import { shareText } from '../../utils/share.js'
 import styles from './SessionView.module.css'
 
 /** 会话页：标题栏（移动端为顶栏）+ 消息列表，输入框吸底 */
@@ -29,6 +32,17 @@ export const SessionView = ({
           <div className={clsx(styles.title, siderCollapsed && styles.withCollapsedSider)}>
             {title}
           </div>
+          <div className={styles.headerSpacer} />
+          <IconButton
+            size="m"
+            icon={<IconShareOutline16 />}
+            tooltip={t('share')}
+            tooltipPlacement="bottom"
+            onClick={() => {
+              const list = document.querySelector('[data-message-list]') as HTMLElement | null
+              void shareText(`${title}\n\n${list?.innerText ?? ''}`.trim(), title)
+            }}
+          />
         </div>
       )}
       <MessageList

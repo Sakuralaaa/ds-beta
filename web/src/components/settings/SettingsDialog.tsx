@@ -53,8 +53,8 @@ const sections: { value: SettingsSection; label: TranslationKey; icon: ReactNode
     label: 'settingDialogAsideGeneralOptionLabel',
     icon: <IconSettingsOutline16 />,
   },
-  { value: 'data', label: 'settingDialogAsideDataOptionLabel', icon: <IconDataOutline16 /> },
   { value: 'account', label: 'settingDialogAsideAccountOptionLabel', icon: <IconAccountOutline16 /> },
+  { value: 'data', label: 'settingDialogAsideDataOptionLabel', icon: <IconDataOutline16 /> },
 ]
 
 const SettingsContent = () => {
@@ -71,7 +71,7 @@ const SettingsContent = () => {
   return (
     <>
       <Modal
-        title={t('settings')}
+        title={t('systemSettings')}
         closable
         className={styles.dialog}
         mainClassName={styles.dialogMain}

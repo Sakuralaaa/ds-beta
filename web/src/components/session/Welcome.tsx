@@ -14,7 +14,7 @@ export const Welcome = () => {
       {isMobile ? <MobileHeader /> : null}
       <div className={styles.welcome}>
         <div className={styles.greeting}>
-          <WhaleLogo size={isMobile ? 32 : 40} className={styles.greetingLogo} />
+          <WhaleLogo size={isMobile ? 32 : 36} className={styles.greetingLogo} />
           {t('welcomeMessageChat250808')}
         </div>
         <ChatInput sessionId={null} />
