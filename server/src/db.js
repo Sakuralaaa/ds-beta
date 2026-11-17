@@ -61,6 +61,14 @@ CREATE TABLE IF NOT EXISTS files (
 );
 `)
 
+// 迁移：旧库补列
+for (const sql of [
+  'ALTER TABLE users ADD COLUMN disabled INTEGER NOT NULL DEFAULT 0',
+  'ALTER TABLE invites ADD COLUMN created_by INTEGER',
+]) {
+  try { db.exec(sql) } catch { /* 已存在 */ }
+}
+
 export const tx = (fn) => {
   db.exec('BEGIN IMMEDIATE')
   try {

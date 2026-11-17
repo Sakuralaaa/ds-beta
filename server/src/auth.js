@@ -61,6 +61,7 @@ export const login = ({ username, authKey, device }) => {
     user && AUTH_KEY.test(authKey ?? '') &&
     timingSafeEqual(Buffer.from(scrypt(authKey, user.auth_salt), 'hex'), Buffer.from(user.auth_hash, 'hex'))
   if (!ok) throw new HttpError(401, 'bad_credentials', '用户名或密码错误')
+  if (user.disabled) throw new HttpError(403, 'account_disabled', '账号已被管理员停用')
   return { token: issueToken(user.id, device), user: publicUser(user) }
 }
 
@@ -78,7 +79,7 @@ export const authenticate = (req) => {
   if (!token) throw new HttpError(401, 'unauthorized')
   const hash = sha256(token)
   const row = db.prepare('SELECT u.*, t.token_hash FROM tokens t JOIN users u ON u.id = t.user_id WHERE t.token_hash = ?').get(hash)
-  if (!row) throw new HttpError(401, 'unauthorized')
+  if (!row || row.disabled) throw new HttpError(401, 'unauthorized')
   db.prepare('UPDATE tokens SET last_seen = ? WHERE token_hash = ?').run(Date.now(), hash)
   return row
 }

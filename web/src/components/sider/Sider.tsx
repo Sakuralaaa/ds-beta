@@ -11,6 +11,8 @@ import { IconButton } from '../base/IconButton.js'
 import { Modal } from '../base/Modal.js'
 import { showToast } from '../base/toastState.js'
 import { openSettings } from '../settings/settingsDialogState.js'
+import { useAccount } from '../../services/account/account.js'
+import { openAdmin } from '../admin/AdminPanel.js'
 import { closeMobileSider, useMobileSider } from './mobileSiderState.js'
 import { SessionItem } from './SessionItem.js'
 import { WhaleLogo } from '../brand/WhaleLogo.js'
@@ -21,6 +23,7 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   const t = useTranslate()
   const sessions = useChatStore((state) => state.sessions)
   const activeId = useChatStore((state) => state.activeId)
+  const isAdmin = useAccount((state) => !!state.user?.isAdmin)
   const [now, setNow] = useState(Date.now)
   const groups = useMemo(() => groupSessions(sessions, now, t), [sessions, now, t])
   const [deleting, setDeleting] = useState<SessionSummary | null>(null)
@@ -95,6 +98,17 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
         </div>
       </div>
       <div className={styles.bottom}>
+        {isAdmin ? (
+          <button type="button" className={styles.settings} onClick={openAdmin}>
+            <span className={styles.settingsIcon}>
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                <path d="M8 1.75 2.75 3.9v3.6c0 3 2.2 5.6 5.25 6.75 3.05-1.15 5.25-3.75 5.25-6.75V3.9L8 1.75Z" stroke="currentColor" strokeWidth="1.3" strokeLinejoin="round" />
+                <path d="m5.75 8 1.6 1.6 2.9-3.1" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" />
+              </svg>
+            </span>
+            <span className={styles.settingsLabel}>管理后台</span>
+          </button>
+        ) : null}
         <button type="button" className={styles.settings} onClick={() => openSettings('general')}>
           <span className={styles.settingsIcon}>
             <IconSettingsOutline16 />

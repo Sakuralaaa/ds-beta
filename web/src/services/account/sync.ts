@@ -307,6 +307,7 @@ export const clearLocalData = async () => {
   localStorage.removeItem(DIRTY_KEY)
   localStorage.removeItem(REV_KEY)
   localStorage.removeItem('chat-demo:api-key')
+  localStorage.removeItem('dsx:admin-endpoint')
   await new Promise<void>((resolve) => {
     const req = indexedDB.deleteDatabase('chat-demo')
     req.onsuccess = req.onerror = req.onblocked = () => resolve()

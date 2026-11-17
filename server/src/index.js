@@ -4,10 +4,11 @@ import { extname, join, normalize } from 'node:path'
 import {
   HttpError, authenticate, changePassword, listDevices, login, logout, publicUser, register, revokeDevice,
 } from './auth.js'
-import { createInvite, listInvites, parseDuration, revokeInvite } from './invites.js'
+import { revokeInvite } from './invites.js'
 import { pull, push, subscribe } from './sync.js'
 import { getFile, listFileIds, putFile } from './files.js'
 import { fetchOfficialExport } from './importFetch.js'
+import { createInvites, deleteUser, listInvitesDetailed, listUsers, stats, updateUser } from './admin.js'
 
 const PORT = Number(process.env.PORT ?? 8080)
 const STATIC_DIR = process.env.DSX_STATIC_DIR ?? join(process.cwd(), '..', 'web', 'dist')
@@ -71,13 +72,21 @@ const routes = [
     await fetchOfficialExport((await readJson(req)).url, res)
     return undefined
   }],
-  ['GET', /^\/api\/admin\/invites$/, (req) => { requireAdmin(authenticate(req)); return { invites: listInvites() } }],
+  ['GET', /^\/api\/admin\/stats$/, (req) => { requireAdmin(authenticate(req)); return stats() }],
+  ['GET', /^\/api\/admin\/invites$/, (req) => { requireAdmin(authenticate(req)); return { invites: listInvitesDetailed() } }],
   ['POST', /^\/api\/admin\/invites$/, async (req) => {
-    requireAdmin(authenticate(req))
-    const body = await readJson(req)
-    return { invite: createInvite({ uses: Math.max(1, Number(body.uses) || 1), expiresIn: parseDuration(body.expires), note: body.note ?? null }) }
+    const admin = authenticate(req)
+    requireAdmin(admin)
+    return { codes: createInvites(admin, await readJson(req)) }
   }],
   ['DELETE', /^\/api\/admin\/invites\/([\w-]+)$/, (req, m) => { requireAdmin(authenticate(req)); return { ok: revokeInvite(m[1]) } }],
+  ['GET', /^\/api\/admin\/users$/, (req) => { requireAdmin(authenticate(req)); return { users: listUsers() } }],
+  ['PATCH', /^\/api\/admin\/users\/(\d+)$/, async (req, m) => {
+    const admin = authenticate(req)
+    requireAdmin(admin)
+    return updateUser(admin, m[1], await readJson(req))
+  }],
+  ['DELETE', /^\/api\/admin\/users\/(\d+)$/, (req, m) => { const admin = authenticate(req); requireAdmin(admin); return deleteUser(admin, m[1]) }],
 ]
 
 const events = (req, res) => {

@@ -10,12 +10,12 @@ const newCode = () => {
 }
 
 /** expires: 秒数或 null */
-export const createInvite = ({ uses = 1, expiresIn = null, note = null } = {}) => {
+export const createInvite = ({ uses = 1, expiresIn = null, note = null, createdBy = null } = {}) => {
   const code = newCode()
   const now = Date.now()
   db.prepare(
-    'INSERT INTO invites (code, note, max_uses, expires_at, created_at) VALUES (?, ?, ?, ?, ?)'
-  ).run(code, note, uses, expiresIn ? now + expiresIn * 1000 : null, now)
+    'INSERT INTO invites (code, note, max_uses, expires_at, created_at, created_by) VALUES (?, ?, ?, ?, ?, ?)'
+  ).run(code, note, uses, expiresIn ? now + expiresIn * 1000 : null, now, createdBy)
   return getInvite(code)
 }
 
