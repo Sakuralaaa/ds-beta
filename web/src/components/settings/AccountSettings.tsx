@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getServer, requestJson } from '../../services/account/api.js'
+import { requestJson } from '../../services/account/api.js'
 import { signOut, useAccount } from '../../services/account/account.js'
 import { getSyncStatus, onSyncStatus, pullNow, pushNow, type SyncStatus } from '../../services/account/sync.js'
 import { useSettings } from '../../services/settings.js'
@@ -67,12 +67,6 @@ export const AccountSettings = () => {
             {user?.username}
             {user?.isAdmin ? <span className={styles.tag}>admin</span> : null}
           </div>
-        </div>
-      </div>
-      <div className={styles.row}>
-        <div>
-          <div className={styles.label}>{t.server}</div>
-          <div className={styles.value}>{getServer() || `${t.sameOrigin}（${location.host}）`}</div>
         </div>
       </div>
       <div className={styles.row}>

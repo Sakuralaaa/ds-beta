@@ -23,7 +23,8 @@ export const isNativeApp = (): boolean =>
   typeof window !== 'undefined' &&
   ((window as { Capacitor?: { isNativePlatform?: () => boolean } }).Capacitor?.isNativePlatform?.() ?? false)
 
-export const getServer = (): string => read(SERVER_KEY) ?? ''
+// 服务器地址在构建时写死（DSX_SERVER），网页端留空即同源；界面上不再显示或修改
+export const getServer = (): string => __DSX_SERVER__ || (read(SERVER_KEY) ?? '')
 export const setServer = (url: string) => write(SERVER_KEY, url.trim().replace(/\/+$/, '') || null)
 export const getToken = (): string | null => read(TOKEN_KEY)
 export const setToken = (token: string | null) => write(TOKEN_KEY, token)
