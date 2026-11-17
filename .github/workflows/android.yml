@@ -49,6 +49,7 @@ jobs:
             --splashBackgroundColor '#ffffff' --splashBackgroundColorDark '#161616'
           M=android/app/src/main/AndroidManifest.xml
           sed -i 's#<uses-permission android:name="android.permission.INTERNET" />#&\n    <uses-permission android:name="android.permission.RECORD_AUDIO" />\n    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />\n    <uses-permission android:name="android.permission.CAMERA" />#' $M
+          sed -i 's#</manifest>#    <queries>\n        <intent>\n            <action android:name="android.speech.RecognitionService" />\n        </intent>\n    </queries>\n</manifest>#' $M
           V=$(date +%y%m%d%H)
           sed -i "s/versionCode 1$/versionCode $V/; s/versionName \"1.0\"/versionName \"0.1.$GITHUB_RUN_NUMBER-beta\"/" android/app/build.gradle
           npx cap sync android

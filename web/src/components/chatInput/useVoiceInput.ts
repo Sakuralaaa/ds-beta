@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import type { TranslationMessage } from '../../i18n/index.js'
 import { transcribe } from '../../services/api/speech.js'
 import { startRecording, type Recording } from '../../services/speech/recorder.js'
+import { nativeAsrAvailable, startNativeAsr, type NativeSession } from '../../services/speech/nativeAsr.js'
 import { useSettings } from '../../services/settings.js'
 import { showToast } from '../base/toastState.js'
 
@@ -34,6 +35,7 @@ export const useVoiceInput = (onText: (text: string) => void) => {
   /** 本次录音已录秒数，只在录音中递增 */
   const [seconds, setSeconds] = useState(0)
   const recordingRef = useRef<Recording | null>(null)
+  const nativeRef = useRef<NativeSession | null>(null)
   const controllerRef = useRef<AbortController | null>(null)
   const operationRef = useRef(0)
   const onTextRef = useRef(onText)
@@ -43,6 +45,8 @@ export const useVoiceInput = (onText: (text: string) => void) => {
     operationRef.current++
     recordingRef.current?.cancel()
     recordingRef.current = null
+    nativeRef.current?.cancel()
+    nativeRef.current = null
     controllerRef.current?.abort()
     controllerRef.current = null
   }, [])
@@ -53,6 +57,16 @@ export const useVoiceInput = (onText: (text: string) => void) => {
   }, [cancelOperation])
 
   const finish = useCallback(async () => {
+    const native = nativeRef.current
+    if (native) {
+      nativeRef.current = null
+      setStatus('transcribing')
+      const text = (await native.stop()).trim()
+      setStatus('idle')
+      if (text) onTextRef.current(text)
+      else showToast({ key: 'voiceInputEmpty' })
+      return
+    }
     const recording = recordingRef.current
     if (!recording) {
       // 仍在等待麦克风授权时也允许取消；迟到的录音对象会立即释放。
@@ -110,6 +124,22 @@ export const useVoiceInput = (onText: (text: string) => void) => {
     }
     const operation = ++operationRef.current
     setStatus('recording')
+    if (__DSX_APP__ && (await nativeAsrAvailable())) {
+      try {
+        const session = await startNativeAsr()
+        if (operationRef.current !== operation) {
+          session.cancel()
+          return
+        }
+        nativeRef.current = session
+      } catch (error) {
+        if (operationRef.current === operation) {
+          setStatus('idle')
+          showToast(describeRecordingError(error))
+        }
+      }
+      return
+    }
     try {
       const recording = await startRecording(() => {
         if (operationRef.current === operation) {
