@@ -654,3 +654,18 @@
   margin-top: 10px;
   accent-color: #4d6bfe;
 }
+
+.appPage {
+  animation: dsxSlideIn 0.26s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.appPageBody {
+  animation: dsxFadeIn 0.2s ease-out;
+}
+@keyframes dsxSlideIn {
+  from { transform: translateX(100%); }
+  to { transform: none; }
+}
+@keyframes dsxFadeIn {
+  from { opacity: 0; transform: translateX(24px); }
+  to { opacity: 1; transform: none; }
+}

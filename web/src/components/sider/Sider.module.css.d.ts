@@ -35,6 +35,8 @@ declare const styles: {
   readonly "settingsLabel": string;
   readonly "sider": string;
   readonly "appSearch": string;
+  readonly "appDrawer": string;
+  readonly "appMask": string;
   readonly "top": string;
   readonly "topSpacer": string;
   readonly "userMore": string;

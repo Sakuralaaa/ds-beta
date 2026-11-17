@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n/index.js'
 import {
   IconCloseOutline16,
@@ -27,7 +27,8 @@ import { showToast } from '../base/toastState.js'
 import { openSettings } from '../settings/settingsDialogState.js'
 import { signOut, useAccount } from '../../services/account/account.js'
 import { openAdmin } from '../admin/AdminPanel.js'
-import { closeMobileSider, useMobileSider } from './mobileSiderState.js'
+import { closeMobileSider, openMobileSider, useMobileSider } from './mobileSiderState.js'
+import { useBackHandler } from '../../services/app/back.js'
 import { SessionItem } from './SessionItem.js'
 import { WhaleLogo } from '../brand/WhaleLogo.js'
 import styles from './Sider.module.css'
@@ -41,6 +42,7 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
   const isAdmin = !!user?.isAdmin
   const [searching, setSearching] = useState(false)
   const [selecting, setSelecting] = useState(false)
+  useBackHandler(selecting, () => setSelecting(false))
   const [selected, setSelected] = useState<Set<string>>(new Set())
   const [batchDeleting, setBatchDeleting] = useState(false)
   const exitSelect = () => {
@@ -307,6 +309,8 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
 /** 移动端抽屉：浮在页面上方，点空白区域关闭。 */
 export const MobileSider = () => {
   const open = useMobileSider((state) => state.open)
+  useBackHandler(open, closeMobileSider)
+  if (__DSX_APP__) return <AppDrawer open={open} />
   if (!open) {
     return null
   }
@@ -314,6 +318,78 @@ export const MobileSider = () => {
     <>
       <div className={styles.drawerMask} onClick={closeMobileSider} />
       <div className={styles.drawer}>
+        <Sider mobile />
+      </div>
+    </>
+  )
+}
+
+/** APK：抽屉常驻，滑入/滑出动画 + 遮罩渐变；左边缘右滑打开、抽屉上左滑关闭 */
+const AppDrawer = ({ open }: { open: boolean }) => {
+  const drawerRef = useRef<HTMLDivElement>(null)
+  const [drag, setDrag] = useState<number | null>(null)
+  useEffect(() => {
+    let start: { x: number; y: number; open: boolean } | null = null
+    let dx = 0
+    let decided: boolean | null = null
+    const width = () => drawerRef.current?.offsetWidth ?? 300
+    const onStart = (e: TouchEvent) => {
+      const t = e.touches[0]
+      const isOpen = useMobileSider.getState().open
+      if (!isOpen && t.clientX > 24) return
+      start = { x: t.clientX, y: t.clientY, open: isOpen }
+      dx = 0
+      decided = null
+    }
+    const onMove = (e: TouchEvent) => {
+      if (!start) return
+      const t = e.touches[0]
+      dx = t.clientX - start.x
+      const dy = t.clientY - start.y
+      if (decided === null && Math.hypot(dx, dy) > 8) decided = Math.abs(dx) > Math.abs(dy)
+      if (!decided) return
+      const w = width()
+      const offset = start.open ? Math.min(0, dx) : Math.min(0, dx - w)
+      setDrag(Math.max(-w, offset))
+    }
+    const onEnd = () => {
+      if (start && decided) {
+        const w = width()
+        if (start.open && dx < -w / 4) closeMobileSider()
+        else if (!start.open && dx > w / 4) openMobileSider()
+      }
+      start = null
+      setDrag(null)
+    }
+    document.addEventListener('touchstart', onStart, { passive: true })
+    document.addEventListener('touchmove', onMove, { passive: true })
+    document.addEventListener('touchend', onEnd)
+    document.addEventListener('touchcancel', onEnd)
+    return () => {
+      document.removeEventListener('touchstart', onStart)
+      document.removeEventListener('touchmove', onMove)
+      document.removeEventListener('touchend', onEnd)
+      document.removeEventListener('touchcancel', onEnd)
+    }
+  }, [])
+  const w = drawerRef.current?.offsetWidth ?? 300
+  const progress = drag !== null ? 1 + drag / w : open ? 1 : 0
+  return (
+    <>
+      <div
+        className={styles.appMask}
+        style={{ opacity: progress * 0.5, pointerEvents: open ? 'auto' : 'none', transition: drag !== null ? 'none' : undefined }}
+        onClick={closeMobileSider}
+      />
+      <div
+        ref={drawerRef}
+        className={styles.appDrawer}
+        style={{
+          transform: `translateX(${drag !== null ? drag : open ? 0 : -w - 8}px)`,
+          transition: drag !== null ? 'none' : undefined,
+          visibility: progress > 0 || drag !== null ? 'visible' : 'hidden',
+        }}
+      >
         <Sider mobile />
       </div>
     </>

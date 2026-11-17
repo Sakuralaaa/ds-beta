@@ -382,3 +382,11 @@
   font-size: 11px;
   color: var(--dsw-alias-label-tertiary, #999);
 }
+
+.appPlus {
+  animation: dsxPlusIn 0.2s ease-out;
+}
+@keyframes dsxPlusIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}

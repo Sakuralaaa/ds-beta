@@ -5,6 +5,7 @@ import { useTranslate } from '../../i18n/index.js'
 import { IconCloseOutline16 } from './icons.js'
 import { IconButton } from './IconButton.js'
 import styles from './Modal.module.css'
+import { useBackHandler } from '../../services/app/back.js'
 
 /** 当前打开的弹窗，后打开的在末尾；叠放时 Esc 只关闭最上层 */
 const openModals: object[] = []
@@ -33,6 +34,7 @@ export const Modal = ({
   const titleId = useId()
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
+  useBackHandler(true, () => onCloseRef.current())
   useEffect(() => {
     const token = {}
     openModals.push(token)

@@ -22,6 +22,7 @@ import {
 } from '../../services/chat/drafts.js'
 import { stopReadAloud } from '../../services/speech/readAloud.js'
 import { IconButton } from '../base/IconButton.js'
+import { useBackHandler } from '../../services/app/back.js'
 import { Tooltip } from '../base/Tooltip.js'
 import { ensureApiKey } from '../settings/settingsDialogState.js'
 import { DragMask, useFileDrop } from './DragMask.js'
@@ -57,6 +58,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
   const cameraInputRef = useRef<HTMLInputElement>(null)
   const albumInputRef = useRef<HTMLInputElement>(null)
   const [plusOpen, setPlusOpen] = useState(false)
+  useBackHandler(plusOpen, () => setPlusOpen(false))
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const togglesRef = useRef<HTMLDivElement>(null)
 
@@ -317,9 +319,13 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
               <span>{label}</span>
             </button>
           ))}
+        </div>
+      ) : null}
+      {__DSX_APP__ ? (
+        <>
           <input ref={cameraInputRef} type="file" hidden accept="image/*" capture="environment" onChange={(event) => { acceptFiles(Array.from(event.target.files ?? [])); event.target.value = '' }} />
           <input ref={albumInputRef} type="file" hidden multiple accept="image/*" onChange={(event) => { acceptFiles(Array.from(event.target.files ?? [])); event.target.value = '' }} />
-        </div>
+        </>
       ) : null}
       {dragging ? <DragMask /> : null}
     </div>

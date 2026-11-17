@@ -2,10 +2,23 @@
   "appId": "xyz.sakura.dsbeta",
   "appName": "DeepSeek Beta",
   "webDir": "../web/dist",
-  "server": { "androidScheme": "https" },
+  "server": {
+    "androidScheme": "https"
+  },
   "android": {
     "backgroundColor": "#ffffff",
     "adjustMarginsForEdgeToEdge": "auto",
     "allowMixedContent": false
+  },
+  "plugins": {
+    "SplashScreen": {
+      "launchAutoHide": false,
+      "launchShowDuration": 3000,
+      "backgroundColor": "#ffffff",
+      "androidScaleType": "CENTER_CROP",
+      "showSpinner": false,
+      "splashFullScreen": false,
+      "splashImmersive": false
+    }
   }
 }

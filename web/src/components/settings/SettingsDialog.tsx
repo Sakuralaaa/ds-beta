@@ -39,6 +39,7 @@ import { ApiKeyConfirm, ApiKeyField, useApiKeyEditor } from './ApiKeyField.js'
 import { closeSettings, useSettingsDialog, type SettingsSection } from './settingsDialogState.js'
 import { AccountSettings, IconAccountOutline16 } from './AccountSettings.js'
 import styles from './Settings.module.css'
+import { useBackHandler } from '../../services/app/back.js'
 
 /**
  * 设置弹窗：分「通用设置」（主题、语言、朗读音色、位置）与「数据管理」（API Key、导入、导出、删除）。
@@ -73,6 +74,7 @@ const SettingsContent = () => {
   const [appPage, setAppPage] = useState<null | 'account' | 'data' | 'general' | 'font'>(
     () => (section === 'general' ? null : section)
   )
+  useBackHandler(__DSX_APP__, () => (appPage ? setAppPage(null) : !historyDelete.busy && closeSettings()))
   if (__DSX_APP__) {
     const title =
       appPage === 'account' ? '账号管理' : appPage === 'data' ? '数据管理' : appPage === 'general' ? '通用' : appPage === 'font' ? '字体大小' : '设置'
@@ -90,7 +92,7 @@ const SettingsContent = () => {
             </button>
             <div className={styles.appPageTitle}>{title}</div>
           </div>
-          <div className={styles.appPageBody}>
+          <div key={appPage ?? 'home'} className={styles.appPageBody}>
             {appPage === null ? (
               <AppSettingsHome onOpen={setAppPage} />
             ) : appPage === 'account' ? (

@@ -3,6 +3,7 @@ import { useEffect, useLayoutEffect, useRef, useState, type TouchEvent } from 'r
 import { createPortal } from 'react-dom'
 import { create } from 'zustand'
 import type { MenuOption } from './Menu.js'
+import { useBackHandler } from '../../services/app/back.js'
 import styles from './Menu.module.css'
 
 /** 长按弹出的菜单（移动端，仿官方 App）：全局只有一个 */
@@ -45,6 +46,7 @@ export const ContextMenuHost = () => {
   const menu = useContextMenu()
   const ref = useRef<HTMLDivElement>(null)
   const [pos, setPos] = useState<{ left: number; top: number } | null>(null)
+  useBackHandler(!!menu, close)
   useLayoutEffect(() => {
     if (!menu || !ref.current) return setPos(null)
     const { width, height } = ref.current.getBoundingClientRect()
@@ -97,6 +99,7 @@ const useSelectText = create<string | null>(() => null)
 export const openSelectText = (text: string) => useSelectText.setState(text, true)
 export const SelectTextHost = ({ title }: { title: string }) => {
   const text = useSelectText()
+  useBackHandler(text !== null, () => useSelectText.setState(null, true))
   if (text === null) return null
   return createPortal(
     <div className={styles.selectPage}>

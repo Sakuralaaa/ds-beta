@@ -487,3 +487,22 @@
 .top[hidden] {
   display: none;
 }
+
+.appDrawer {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 800;
+  padding-top: env(safe-area-inset-top);
+  background: var(--dsw-alias-bg-base, #fff);
+  transition: transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1), visibility 0.28s;
+  will-change: transform;
+}
+.appMask {
+  position: fixed;
+  inset: 0;
+  z-index: 799;
+  background: #000;
+  transition: opacity 0.28s;
+}
