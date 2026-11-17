@@ -12,6 +12,8 @@ services:
       - dsx-data:/data
     environment:
       - DSX_FILE_QUOTA_MB=200
+      # 没有容器终端时：用这个当第一个账号的邀请码（只在还没有用户时有效，注册完可删）
+      # - DSX_BOOTSTRAP_INVITE=换成你自己的随机串
     mem_limit: 256m
 
 volumes:

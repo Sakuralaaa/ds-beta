@@ -38,7 +38,10 @@ export const register = ({ username, authKey, inviteCode, device }) => {
     const firstUser = userCount === 0
     const code = String(inviteCode ?? '').trim().toUpperCase()
     const invite = code ? getInvite(code) : null
-    if (!inviteUsable(invite)) throw new HttpError(403, 'bad_invite', '邀请码无效或已用完')
+    // 面板部署没有容器终端时：设置 DSX_BOOTSTRAP_INVITE，仅在还没有任何用户时可用来注册第一个（管理员）账号
+    const boot = String(process.env.DSX_BOOTSTRAP_INVITE ?? '').trim().toUpperCase()
+    const bootOk = firstUser && boot.length >= 6 && code === boot
+    if (!bootOk && !inviteUsable(invite)) throw new HttpError(403, 'bad_invite', '邀请码无效或已用完')
     if (db.prepare('SELECT 1 FROM users WHERE username = ?').get(username)) throw new HttpError(409, 'username_taken', '用户名已被占用')
     const salt = randomBytes(16).toString('hex')
     const encSalt = randomBytes(16).toString('hex')
@@ -46,7 +49,7 @@ export const register = ({ username, authKey, inviteCode, device }) => {
     const { lastInsertRowid: id } = db
       .prepare('INSERT INTO users (username, auth_hash, auth_salt, enc_salt, is_admin, created_at) VALUES (?, ?, ?, ?, ?, ?)')
       .run(username, scrypt(authKey, salt), salt, encSalt, firstUser ? 1 : 0, now)
-    {
+    if (inviteUsable(invite)) {
       db.prepare('UPDATE invites SET uses = uses + 1 WHERE code = ?').run(invite.code)
       db.prepare('INSERT INTO invite_uses (code, user_id, used_at) VALUES (?, ?, ?)').run(invite.code, id, now)
     }
