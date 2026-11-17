@@ -63,6 +63,8 @@ export const MessageList = ({
   const scrollToBottom = useCallback(() => {
     const el = scrollRef.current
     if (el && stickyRef.current) {
+      const target = el.scrollHeight - el.clientHeight
+      if (Math.abs(el.scrollTop - target) < 1) return
       el.scrollTop = el.scrollHeight
       scrollTopRef.current = el.scrollTop
     }

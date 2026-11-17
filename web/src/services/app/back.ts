@@ -39,5 +39,17 @@ export const setupBackButton = () => {
 
 export const hideSplash = () => {
   const s = plugin<{ hide: (o?: { fadeOutDuration?: number }) => Promise<void> }>('SplashScreen')
-  void s?.hide({ fadeOutDuration: 250 }).catch(() => undefined)
+  void s?.hide({ fadeOutDuration: 0 }).catch(() => undefined)
+}
+
+/** 网页层启动动画：至少播 1.1s 再淡出 */
+export const finishWebSplash = () => {
+  const el = document.getElementById('dsx-splash')
+  if (!el) return
+  const t0 = (window as any).__dsxT0 ?? performance.now()
+  const wait = Math.max(0, 1100 - (performance.now() - t0))
+  setTimeout(() => {
+    el.classList.add('out')
+    setTimeout(() => el.remove(), 400)
+  }, wait)
 }

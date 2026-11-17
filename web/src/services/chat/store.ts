@@ -1,4 +1,5 @@
 import { isInlineId } from '../api/inlineFiles.js'
+import { smoothStream } from './smoothStream.js'
 import { activeEndpoint } from '../account/endpoint.js'
 import { create } from 'zustand'
 import { createId } from '../../utils/id.js'
@@ -1030,7 +1031,7 @@ const streamReply = async (sessionId: string, initial: AssistantMessage, request
           controller.signal
         )
         const blockIndexes = new Map<number, number>()
-        for await (const event of events) {
+        for await (const event of smoothStream(events)) {
           receivedContent ||= event.type === 'content_block_start'
           if (
             event.type === 'message_delta' &&
