@@ -87,7 +87,10 @@ export const createConfig = ({
       __DSX_APP__: JSON.stringify(process.env.DSX_APP === '1'),
     }),
     new rspack.CopyRspackPlugin({
-      patterns: [{ from: path.resolve(root, 'LICENSE'), to: 'LICENSE', toType: 'file' }],
+      patterns: [
+        { from: path.resolve(root, 'LICENSE'), to: 'LICENSE', toType: 'file' },
+        { from: path.resolve(root, 'public') },
+      ],
     }),
   ],
   performance: { hints: false },

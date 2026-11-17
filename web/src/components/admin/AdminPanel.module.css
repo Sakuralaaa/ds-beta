@@ -38,7 +38,7 @@
 .fresh { margin-top: 16px; padding: 14px; border-radius: 12px; background: rgba(77, 107, 254, 0.06); }
 .freshCodes { display: flex; flex-wrap: wrap; gap: 8px; }
 .freshCodes code, .table code { font-family: var(--ds-font-family-code, monospace); font-size: 13px; letter-spacing: 0.5px; }
-.freshCodes code { padding: 2px 8px; border-radius: 6px; background: #fff; border: 1px solid rgba(77, 107, 254, 0.25); }
+.freshCodes code { padding: 2px 8px; border-radius: 6px; background: var(--dsw-alias-bg-base); border: 1px solid rgba(77, 107, 254, 0.25); }
 .preview {
   margin: 12px 0 0; padding: 10px 12px; border-radius: 8px; white-space: pre-wrap; font: inherit; font-size: 13px;
   background: var(--dsw-alias-bg-base, #fff); color: var(--dsw-alias-label-secondary, #555);
@@ -58,12 +58,12 @@
 .link, .danger { padding: 0; border: 0; background: none; font: inherit; font-size: 13px; cursor: pointer; color: #4d6bfe; }
 .danger { color: #e5484d; }
 .tag, .tagBlue, .tagRed { margin-left: 6px; padding: 0 6px; border-radius: 4px; font-size: 11px; line-height: 17px; }
-.tag { background: #f0f0f0; color: #666; }
+.tag { background: var(--dsw-alias-bg-secondary); color: var(--dsw-alias-label-secondary); }
 .tagBlue { background: rgba(77, 107, 254, 0.1); color: #4d6bfe; }
 .tagRed { background: rgba(229, 72, 77, 0.1); color: #e5484d; }
 .s_active, .s_used, .s_expired, .s_revoked { font-size: 12px; padding: 1px 8px; border-radius: 999px; }
 .s_active { background: rgba(48, 164, 108, 0.12); color: #208a57; }
-.s_used { background: #f0f0f0; color: #777; }
+.s_used { background: var(--dsw-alias-bg-secondary); color: var(--dsw-alias-label-tertiary); }
 .s_expired { background: rgba(245, 166, 35, 0.15); color: #b26b00; }
 .s_revoked { background: rgba(229, 72, 77, 0.1); color: #e5484d; }
 .toast {

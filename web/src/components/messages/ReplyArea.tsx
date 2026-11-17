@@ -1,5 +1,6 @@
 import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
+import { useSettings } from '../../services/settings.js'
 import { memo, useEffect, useState, type ReactNode } from 'react'
 import {
   IconBrowseOutline16,
@@ -65,7 +66,10 @@ export const ReplyArea = memo(function ReplyArea({
   hasResponse: boolean
 }) {
   useTranslate()
-  const [open, setOpen] = useState(true)
+  const autoCollapse = useSettings((state) => state.autoCollapseThinking)
+  // null 表示跟随设置：开启自动折叠时，正文开始输出后收起思考；用户点过标题后以手动为准
+  const [manualOpen, setOpen] = useState<boolean | null>(null)
+  const open = manualOpen ?? !(autoCollapse && hasResponse)
   const titleActive = streaming && !hasResponse
   useTicker(titleActive, 1000)
   if (view.steps.length === 0 && !(message.thinking && streaming)) {
@@ -78,7 +82,7 @@ export const ReplyArea = memo(function ReplyArea({
   return (
     <div className={styles.area}>
       {title ? (
-        <div className={styles.title} onClick={() => setOpen((value) => !value)}>
+        <div className={styles.title} onClick={() => setOpen(!open)}>
           <span className={clsx(styles.titleIcon, stopped && styles.stoppedIcon)}>
             <IconThinkOutline16 />
           </span>

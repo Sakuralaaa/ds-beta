@@ -1,6 +1,8 @@
 import { create } from 'zustand'
 import type { LinkedMessage, TranslationMessage } from '../i18n/index.js'
 import { uploadFile } from './api/client.js'
+import { INLINE_PREFIX, rememberInlineBlob } from './api/inlineFiles.js'
+import { activeEndpoint } from './account/endpoint.js'
 import { classifyApiError, getUploadErrorInfo, isRetryableApiError } from './api/errors.js'
 import type { FilePurpose } from './api/types.js'
 import { ACCEPT_FILE_EXTS } from './uploadExts.js'
@@ -171,6 +173,13 @@ export const uploadAttachment = (
   name: string,
   isImage: boolean
 ): Promise<string> => {
+  // 中转站模式不走 Files API：记下原件，发送时内联
+  if (activeEndpoint()) {
+    rememberInlineBlob(id, blob)
+    const serverId = `${INLINE_PREFIX}${id}`
+    setTask(id, { status: 'done', serverId })
+    return Promise.resolve(serverId)
+  }
   const current = pending.get(id)
   if (current) {
     return current.promise

@@ -1,3 +1,5 @@
+import { isInlineId } from '../api/inlineFiles.js'
+import { activeEndpoint } from '../account/endpoint.js'
 import { create } from 'zustand'
 import { createId } from '../../utils/id.js'
 import { ApiError, streamMessage } from '../api/client.js'
@@ -782,11 +784,13 @@ const saveServerIds = (sessionId: string, serverIds: Map<string, string>) => {
  * 本地也没有原件（导入的文档附件只有元数据）时返回 null，该附件只展示、不进入请求。
  */
 const ensureServerId = async (apiKey: string, file: FileAttachment): Promise<string | null> => {
-  if (file.serverId) {
+  // 内联 id 只在中转站模式有效；官方模式下重新上传，反之亦然
+  const usable = (id: string) => isInlineId(id) === !!activeEndpoint()
+  if (file.serverId && usable(file.serverId)) {
     return file.serverId
   }
   const task = useUploads.getState().tasks[file.id]
-  if (task?.status === 'done') {
+  if (task?.status === 'done' && usable(task.serverId)) {
     return task.serverId
   }
   const blob = await db.loadFile(file.id)

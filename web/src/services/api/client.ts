@@ -2,6 +2,7 @@ import { translate, type TranslationMessage } from '../../i18n/index.js'
 import { readMessageEvent } from './parseEvent.js'
 import { readServerSentEvents } from './sse.js'
 import { activeEndpoint } from '../account/endpoint.js'
+import { inlineFiles } from './inlineFiles.js'
 import type {
   ApiErrorBody,
   CreateMessageRequest,
@@ -152,6 +153,7 @@ export async function* streamMessage(
   body: CreateMessageRequest,
   signal: AbortSignal
 ): AsyncGenerator<MessageStreamEvent> {
+  if (activeEndpoint()) body = await inlineFiles(body)
   const response = await request(`${anthropicBase()}/messages`, {
     method: 'POST',
     headers: {

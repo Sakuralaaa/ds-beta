@@ -154,6 +154,7 @@ export const en = {
   unpin: 'Unpin',
   multiSelect: 'Select',
   welcomeMessageMobile: 'Welcome back, start anytime',
+  settingsAutoCollapseThinking: 'Auto-collapse thinking',
   systemSettings: 'Settings',
   menuAdmin: 'Admin console',
   menuLogout: 'Log out',

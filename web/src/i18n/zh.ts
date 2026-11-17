@@ -146,6 +146,7 @@ export const zh = {
   unpin: '取消置顶',
   multiSelect: '多选',
   welcomeMessageMobile: '欢迎回来，随时开始吧',
+  settingsAutoCollapseThinking: '自动折叠思考内容',
   systemSettings: '系统设置',
   menuAdmin: '管理后台',
   menuLogout: '退出登录',

@@ -25,6 +25,7 @@ import {
   setLocation,
   setThemePreference,
   setTtsVoice,
+  setAutoCollapseThinking,
   useSettings,
   type ThemePreference,
 } from '../../services/settings.js'
@@ -104,6 +105,7 @@ const SettingsContent = () => {
               <ThemeSetting />
               <LocaleSetting />
               <TtsVoiceSetting />
+              <AutoCollapseSetting />
               <LocationSetting />
             </>
           ) : (
@@ -290,6 +292,28 @@ const LocaleSetting = () => {
             { value: 'en-US', label: t('settingsLocaleEnUS'), lang: 'en' },
           ]}
           onChange={setLocale}
+        />
+      }
+    />
+  )
+}
+
+/** 回答完成后自动折叠思考内容（仿官方 App 设置项） */
+const AutoCollapseSetting = () => {
+  const t = useTranslate()
+  const on = useSettings((state) => state.autoCollapseThinking)
+  return (
+    <SettingCell
+      label={t('settingsAutoCollapseThinking')}
+      status={null}
+      action={
+        <button
+          type="button"
+          role="switch"
+          aria-checked={on}
+          aria-label={t('settingsAutoCollapseThinking')}
+          className={clsx(styles.switch, on && styles.switchOn)}
+          onClick={() => setAutoCollapseThinking(!on)}
         />
       }
     />

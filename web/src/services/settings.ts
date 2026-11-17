@@ -21,6 +21,8 @@ type Settings = {
   pinned: string[]
   /** 字体缩放档位 -1..4（0 为标准）；null 跟随系统 */
   fontStep: number | null
+  /** 回答完成后自动折叠思考内容 */
+  autoCollapseThinking: boolean
 }
 
 const KEYS = {
@@ -34,6 +36,7 @@ const KEYS = {
   siderCollapsed: 'chat-demo:sider-collapsed',
   pinned: 'dsx:pinned',
   fontStep: 'dsx:font-step',
+  autoCollapseThinking: 'dsx:auto-collapse-thinking',
 } as const
 
 const read = (key: string) => {
@@ -110,6 +113,7 @@ export const useSettings = create<Settings>(() => ({
       return []
     }
   })(),
+  autoCollapseThinking: read(KEYS.autoCollapseThinking) === 'true',
   fontStep: (() => {
     const v = read(KEYS.fontStep)
     return v === null || v === '' ? null : Number(v)
@@ -125,6 +129,11 @@ export const togglePinned = (ids: string[]) => {
   const current = useSettings.getState().pinned
   const allPinned = ids.every((id) => current.includes(id))
   setPinned(allPinned ? current.filter((id) => !ids.includes(id)) : [...ids.filter((id) => !current.includes(id)), ...current])
+}
+
+export const setAutoCollapseThinking = (autoCollapseThinking: boolean) => {
+  write(KEYS.autoCollapseThinking, String(autoCollapseThinking))
+  useSettings.setState({ autoCollapseThinking })
 }
 
 export const setFontStep = (fontStep: number | null) => {
