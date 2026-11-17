@@ -1,0 +1,9 @@
+node_modules/
+dist/
+data/
+*.zip
+samples/
+.env
+node_modules/
+dist/
+data/

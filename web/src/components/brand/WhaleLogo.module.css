@@ -1,0 +1,45 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--dsw-alias-brand-primary);
+}
+
+.iconWrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.icon {
+  display: block;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0 4px;
+  border-radius: 6px;
+  font-size: 9px;
+  line-height: 13px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+  font-family: var(--dsw-font-family);
+  color: #fff;
+  background: var(--dsw-alias-brand-primary);
+  box-shadow: 0 0 0 1.5px var(--dsw-specific-sidebar-fill, #fff);
+  white-space: nowrap;
+}
+
+.iconBadge {
+  position: absolute;
+  top: -9px;
+  right: -22px;
+}
+
+.wordmark {
+  margin-left: 12px;
+  font-size: 22px;
+  line-height: 24px;
+  font-weight: 700;
+  letter-spacing: -0.4px;
+  color: var(--dsw-alias-brand-primary);
+}

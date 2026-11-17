@@ -1,0 +1,13 @@
+{
+  "name": "ds-beta-server",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "license": "MIT",
+  "engines": { "node": ">=22.12" },
+  "bin": { "dsx": "src/cli.js" },
+  "scripts": {
+    "start": "node --no-warnings src/index.js",
+    "cli": "node --no-warnings src/cli.js"
+  }
+}
