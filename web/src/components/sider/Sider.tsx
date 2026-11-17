@@ -79,7 +79,13 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
 
   return (
     <div className={clsx(styles.sider, mobile && styles.mobile)}>
-      <div className={styles.top}>
+      {__DSX_APP__ && !selecting ? (
+        <button type="button" className={styles.appSearch} onClick={() => setSearching(true)}>
+          <IconSearchOutline16 />
+          <span>搜索对话内容...</span>
+        </button>
+      ) : null}
+      <div className={styles.top} hidden={__DSX_APP__ && !selecting}>
         <div className={styles.appName}>
           <WhaleLogo size={28} withWordmark />
         </div>
@@ -108,7 +114,7 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
             <IconCloseOutline16 />
           </button>
         </div>
-      ) : (
+      ) : __DSX_APP__ ? null : (
       <button
         type="button"
         className={styles.newChat}

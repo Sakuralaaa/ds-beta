@@ -34,6 +34,7 @@ declare const styles: {
   readonly "settingsIcon": string;
   readonly "settingsLabel": string;
   readonly "sider": string;
+  readonly "appSearch": string;
   readonly "top": string;
   readonly "topSpacer": string;
   readonly "userMore": string;

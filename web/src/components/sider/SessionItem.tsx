@@ -14,7 +14,8 @@ import { shareSession } from '../../utils/share.js'
 import { renameSession, selectSession } from '../../services/chat/store.js'
 import type { SessionSummary } from '../../services/chat/types.js'
 import { IconButton } from '../base/IconButton.js'
-import { Menu } from '../base/Menu.js'
+import { Menu, type MenuOption } from '../base/Menu.js'
+import { openContextMenu, useLongPress } from '../base/ContextMenu.js'
 import { closeMobileSider } from './mobileSiderState.js'
 import styles from './SessionItem.module.css'
 
@@ -35,6 +36,8 @@ export const SessionItem = memo(function SessionItem({
   const [editing, setEditing] = useState(false)
   const displayTitle = session.title || t('untitledChat')
 
+  let pressOptions: MenuOption[] = []
+  const longPress = useLongPress((x, y) => openContextMenu(x, y, pressOptions))
   if (editing) {
     const finish = (title: string) => {
       setEditing(false)
@@ -60,8 +63,43 @@ export const SessionItem = memo(function SessionItem({
     )
   }
 
+  const menuOptions: MenuOption[] = [
+    {
+      key: 'rename',
+      label: t('sessionItemMenuRenameOption'),
+      icon: <IconEditOutline16 />,
+      onSelect: () => setEditing(true),
+    },
+    {
+      key: 'pin',
+      label: t(pinned ? 'unpin' : 'pin'),
+      icon: <IconPinOutline16 />,
+      onSelect: () => togglePinned([session.id]),
+    },
+    {
+      key: 'share',
+      label: t('share'),
+      icon: <IconShareOutline16 />,
+      onSelect: () => void shareSession(session.id, displayTitle),
+    },
+    {
+      key: 'multi',
+      label: t('multiSelect'),
+      icon: <IconMultiSelectOutline16 />,
+      onSelect: onMultiSelect,
+    },
+    {
+      key: 'delete',
+      label: t('delete'),
+      icon: <IconTrashOutline16 />,
+      danger: true,
+      onSelect: onDelete,
+    },
+          ]
+  pressOptions = menuOptions.filter((o) => o.key !== 'share')
   return (
     <div
+      {...(__DSX_APP__ ? longPress : {})}
       className={clsx(styles.item, active && styles.active)}
       onClick={() => {
         selectSession(session.id)
@@ -71,39 +109,7 @@ export const SessionItem = memo(function SessionItem({
       <div className={styles.title}>{displayTitle}</div>
       <div className={styles.action} onClick={(event) => event.stopPropagation()}>
         <Menu
-          options={[
-            {
-              key: 'rename',
-              label: t('sessionItemMenuRenameOption'),
-              icon: <IconEditOutline16 />,
-              onSelect: () => setEditing(true),
-            },
-            {
-              key: 'pin',
-              label: t(pinned ? 'unpin' : 'pin'),
-              icon: <IconPinOutline16 />,
-              onSelect: () => togglePinned([session.id]),
-            },
-            {
-              key: 'share',
-              label: t('share'),
-              icon: <IconShareOutline16 />,
-              onSelect: () => void shareSession(session.id, displayTitle),
-            },
-            {
-              key: 'multi',
-              label: t('multiSelect'),
-              icon: <IconMultiSelectOutline16 />,
-              onSelect: onMultiSelect,
-            },
-            {
-              key: 'delete',
-              label: t('delete'),
-              icon: <IconTrashOutline16 />,
-              danger: true,
-              onSelect: onDelete,
-            },
-          ]}
+          options={menuOptions}
         >
           {({ toggle }) => (
             <IconButton icon={<IconEllipsisOutline16 />} aria-label={t('more')} onClick={toggle} />

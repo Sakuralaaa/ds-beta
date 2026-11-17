@@ -23,7 +23,7 @@ export const groupSessions = (
     const key =
       diff <= 0
         ? 'sessionHistoryTimelineLabelToday'
-        : diff <= 1
+        : __DSX_APP__ ? null : diff <= 1
           ? 'sessionHistoryTimelineLabelYesterday'
           : diff < 7
             ? 'sessionHistoryTimelineLabel7days'

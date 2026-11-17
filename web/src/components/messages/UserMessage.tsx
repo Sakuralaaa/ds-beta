@@ -2,7 +2,9 @@ import { useTranslate } from '../../i18n/index.js'
 import clsx from 'clsx'
 import { memo, useLayoutEffect, useRef, useState } from 'react'
 import { useIsMobile } from '../../app/viewport.js'
-import { IconEditOutline16 } from '../base/icons.js'
+import { IconCopyOutline16, IconEditOutline16, IconShareOutline16 } from '../base/icons.js'
+import { openContextMenu, openSelectText, useLongPress } from '../base/ContextMenu.js'
+import { shareText } from '../../utils/share.js'
 import { editMessage, retryUpload } from '../../services/chat/store.js'
 import { stopReadAloud } from '../../services/speech/readAloud.js'
 import type { UserMessage as UserMessageType } from '../../services/chat/types.js'
@@ -18,6 +20,8 @@ import { MessageFile } from './MessageFile.js'
 import { CopyButton } from './CopyButton.js'
 import styles from './UserMessage.module.css'
 
+const copy = (text: string) => void navigator.clipboard?.writeText(text)
+const SELECT_ICON = <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M3 2.5v11M2 2.5h2M2 13.5h2M6.5 3h7M6.5 8h7M6.5 13h4" strokeLinecap="round" /></svg>
 export const UserMessage = memo(function UserMessage({
   sessionId,
   message,
@@ -53,6 +57,14 @@ export const UserMessage = memo(function UserMessage({
     }
   }, [editing, draft])
 
+  const longPress = useLongPress((x, y) =>
+    openContextMenu(x, y, [
+      { key: 'copy', label: '复制', icon: <IconCopyOutline16 />, onSelect: () => copy(message.content) },
+      { key: 'select', label: '选择文本', icon: SELECT_ICON, onSelect: () => openSelectText(message.content) },
+      ...(busy ? [] : [{ key: 'edit', label: '修改', icon: <IconEditOutline16 />, onSelect: () => { setDraft(message.content); setEditing(true) } }]),
+      { key: 'share', label: '分享', icon: <IconShareOutline16 />, onSelect: () => void shareText(message.content) },
+    ])
+  )
   const sendEdit = () => {
     if (canSend && ensureApiKey() && editMessage(sessionId, message.id, draft.trim())) {
       stopReadAloud()
@@ -112,7 +124,7 @@ export const UserMessage = memo(function UserMessage({
         </div>
       ) : (
         <>
-          {message.content ? <div className={styles.bubble}>{message.content}</div> : null}
+          {message.content ? <div className={styles.bubble} {...(__DSX_APP__ ? longPress : {})}>{message.content}</div> : null}
           <div className={styles.bottom}>
             <div className={clsx(styles.actions, isLast && styles.alwaysShow)}>
               {message.content ? <CopyButton text={message.content} /> : null}

@@ -10,7 +10,7 @@ import styles from './MobileHeader.module.css'
 export const MobileHeader = ({ title, sessionId }: { title?: string; sessionId?: string }) => {
   const t = useTranslate()
   return (
-    <div className={styles.header}>
+    <div className={styles.header} data-app={__DSX_APP__ ? '' : undefined}>
       <IconButton
         size="xl"
         tone="primary"
@@ -26,7 +26,7 @@ export const MobileHeader = ({ title, sessionId }: { title?: string; sessionId?:
         aria-label={t('newChat')}
         onClick={newChat}
       />
-      {sessionId ? (
+      {sessionId && !__DSX_APP__ ? (
         <IconButton
           size="xl"
           tone="primary"

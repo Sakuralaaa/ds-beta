@@ -17,6 +17,7 @@ import { Welcome } from '../components/session/Welcome.js'
 import { ensureApiKey } from '../components/settings/settingsDialogState.js'
 import { SettingsDialog } from '../components/settings/SettingsDialog.js'
 import { Toast } from '../components/base/Toast.js'
+import { ContextMenuHost, SelectTextHost } from '../components/base/ContextMenu.js'
 import { showToast } from '../components/base/toastState.js'
 import { onUploadNotice } from '../services/attachments.js'
 import { Button } from '../components/base/Button.js'
@@ -134,6 +135,8 @@ export const App = () => {
       </div>
       <SettingsDialog />
       <Toast />
+      <ContextMenuHost />
+      <SelectTextHost title="选择文本" />
     </>
   )
 }

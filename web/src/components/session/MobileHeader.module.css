@@ -17,3 +17,8 @@
   font: var(--dsw-font-s-strong-14);
   color: var(--dsw-alias-label-primary);
 }
+
+.header[data-app] .title {
+  text-align: left;
+  font-size: 17px;
+}

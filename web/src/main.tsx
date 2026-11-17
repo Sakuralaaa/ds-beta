@@ -7,5 +7,6 @@ import './app/global.css'
 
 ensureKatex()
 setupTheme()
+if (__DSX_APP__) document.documentElement.classList.add('dsx-app')
 
 createRoot(document.getElementById('root') as HTMLElement).render(<Root />)

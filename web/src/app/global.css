@@ -52,3 +52,11 @@ body.change-theme *::after {
     overscroll-behavior-y: none;
   }
 }
+
+/* APK：避开状态栏/手势条，禁止长按系统菜单 */
+html.dsx-app body {
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  -webkit-touch-callout: none;
+  -webkit-tap-highlight-color: transparent;
+}

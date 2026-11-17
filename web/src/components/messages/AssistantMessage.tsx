@@ -12,6 +12,8 @@ import {
 } from '../base/icons.js'
 import { showToast } from '../base/toastState.js'
 import { shareText } from '../../utils/share.js'
+import { openContextMenu, openSelectText, useLongPress } from '../base/ContextMenu.js'
+import { IconCopyOutline16, IconRefreshOutline16 as IconRegen, IconShareOutline16 as IconShareMenu } from '../base/icons.js'
 import { describeReply } from '../../services/chat/describe.js'
 import { canContinueReply } from '../../services/chat/reply.js'
 import { continueReply, regenerateReply } from '../../services/chat/store.js'
@@ -36,6 +38,8 @@ import styles from './AssistantMessage.module.css'
 
 const TOP_UP_URL = 'https://platform.deepseek.com/top_up'
 
+const copy = (text: string) => void navigator.clipboard?.writeText(text)
+const SELECT_ICON = <svg viewBox="0 0 16 16" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M3 2.5v11M2 2.5h2M2 13.5h2M6.5 3h7M6.5 8h7M6.5 13h4" strokeLinecap="round" /></svg>
 export const AssistantMessage = memo(function AssistantMessage({
   sessionId,
   message,
@@ -66,8 +70,17 @@ export const AssistantMessage = memo(function AssistantMessage({
   const copyText = responseText || notice?.text
   const waiting = streaming && view.steps.length === 0 && !view.answer && !message.thinking
   const summaryEntry = `${message.id}-summary`
+  const longPress = useLongPress((x, y) => {
+    if (streaming || !copyText) return
+    openContextMenu(x, y, [
+      { key: 'copy', label: '复制', icon: <IconCopyOutline16 />, onSelect: () => copy(copyText) },
+      { key: 'select', label: '选择文本', icon: SELECT_ICON, onSelect: () => openSelectText(copyText) },
+      ...(busy || refused ? [] : [{ key: 'regen', label: '重新生成', icon: <IconRegen />, onSelect: () => { stopReadAloud(); regenerateReply(sessionId, message.id) } }]),
+      ...(responseText ? [{ key: 'share', label: '分享', icon: <IconShareMenu />, onSelect: () => void shareText(responseText) }] : []),
+    ])
+  })
   return (
-    <div className={styles.message}>
+    <div className={styles.message} {...(__DSX_APP__ ? longPress : {})}>
       {refused ? null : (
         <ReplyArea
           message={message}

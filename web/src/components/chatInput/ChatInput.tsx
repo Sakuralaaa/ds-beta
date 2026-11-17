@@ -1,5 +1,5 @@
 import clsx from 'clsx'
-import { memo, useCallback, useEffect, useLayoutEffect, useRef } from 'react'
+import { memo, useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import {
   IconGlobeLanguageOutline14,
   IconPaperclipOutline16,
@@ -54,6 +54,9 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
   const isMobile = useIsMobile()
   const search = useSettings((state) => state.search)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const albumInputRef = useRef<HTMLInputElement>(null)
+  const [plusOpen, setPlusOpen] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const togglesRef = useRef<HTMLDivElement>(null)
 
@@ -153,8 +156,9 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
   }
 
   return (
+    <>
     <div
-      className={clsx(styles.wrapper, sessionId === null ? styles.home : styles.session)}
+      className={clsx(styles.wrapper, __DSX_APP__ && styles.app, sessionId === null ? styles.home : styles.session)}
       onClick={(event) => {
         if (event.target === event.currentTarget) {
           textareaRef.current?.focus({ preventScroll: true })
@@ -166,7 +170,8 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
         <textarea
           ref={textareaRef}
           className={clsx(styles.textarea, recording && isMobile && styles.textareaHidden)}
-          placeholder={t('chatInputPlaceholderChat')}
+          placeholder={__DSX_APP__ ? '发消息或按住说话' : t('chatInputPlaceholderChat')}
+          onFocus={() => setPlusOpen(false)}
           rows={2}
           // 移动端不自动聚焦，避免一打开就弹出键盘
           autoFocus={!isMobile}
@@ -244,6 +249,17 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
             }}
           />
           ) : null}
+          {__DSX_APP__ ? (
+            <button
+              type="button"
+              className={clsx(styles.appRound, plusOpen && styles.appRoundOpen)}
+              aria-label={t('uploadFile')}
+              disabled={importingHistory}
+              onClick={() => ensureApiKey() && setPlusOpen(!plusOpen)}
+            >
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6"><circle cx="12" cy="12" r="9.2" /><path d="M12 7.6v8.8M7.6 12h8.8" strokeLinecap="round" /></svg>
+            </button>
+          ) : (
           <IconButton
             size="m"
             tone="primary"
@@ -252,6 +268,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
             disabled={importingHistory}
             onClick={() => ensureApiKey() && fileInputRef.current?.click()}
           />
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -263,7 +280,7 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
               event.target.value = ''
             }}
           />
-          {streaming && sessionId ? (
+          {__DSX_APP__ && !(streaming && sessionId) && !canSend ? null : streaming && sessionId ? (
             <button
               type="button"
               className={styles.sendButton}
@@ -288,7 +305,25 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
           )}
         </div>
       </div>
+      {__DSX_APP__ && plusOpen ? (
+        <div className={styles.appPlus}>
+          {[
+            { label: '拍照', ref: cameraInputRef, d: 'M4 8.5A1.5 1.5 0 0 1 5.5 7h2l1.4-2h6.2l1.4 2h2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5zM12 16a3 3 0 1 0 0-6 3 3 0 0 0 0 6z' },
+            { label: '相册', ref: albumInputRef, d: 'M5 5h14v14H5zM5 15l4-4 4 4 2-2 4 4M15 9.5h.01' },
+            { label: '文件', ref: fileInputRef, d: 'M16.5 7.5l-6.8 6.8a1.8 1.8 0 0 0 2.5 2.5l7-7a3.5 3.5 0 0 0-5-5l-7 7a5.2 5.2 0 0 0 7.4 7.4l6-6' },
+          ].map(({ label, ref, d }) => (
+            <button key={label} type="button" className={styles.appPlusItem} onClick={() => { setPlusOpen(false); ref.current?.click() }}>
+              <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinejoin="round" strokeLinecap="round"><path d={d} /></svg>
+              <span>{label}</span>
+            </button>
+          ))}
+          <input ref={cameraInputRef} type="file" hidden accept="image/*" capture="environment" onChange={(event) => { acceptFiles(Array.from(event.target.files ?? [])); event.target.value = '' }} />
+          <input ref={albumInputRef} type="file" hidden multiple accept="image/*" onChange={(event) => { acceptFiles(Array.from(event.target.files ?? [])); event.target.value = '' }} />
+        </div>
+      ) : null}
       {dragging ? <DragMask /> : null}
     </div>
+    {__DSX_APP__ && sessionId ? <div className={styles.appCaveat}>回答由 AI 生成，仅供参考</div> : null}
+    </>
   )
 }

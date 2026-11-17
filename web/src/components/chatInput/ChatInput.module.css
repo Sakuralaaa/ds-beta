@@ -330,3 +330,55 @@
     cursor: not-allowed;
   }
 }
+
+/* ===== APK（官方安卓 App 样式） ===== */
+.app {
+  border-radius: 24px;
+}
+.app .functionRow {
+  padding: 8px 12px 12px;
+}
+.app .toggle {
+  height: 32px;
+  border-radius: 16px;
+}
+.appRound {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--dsw-alias-label-primary, currentColor);
+  transition: transform 0.2s;
+}
+.appRoundOpen {
+  transform: rotate(45deg);
+}
+.appPlus {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  padding: 0 12px 12px;
+}
+.appPlusItem {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 14px 0;
+  border: none;
+  border-radius: 16px;
+  background: var(--dsw-alias-bg-secondary, rgba(0, 0, 0, 0.04));
+  color: var(--dsw-alias-label-primary, currentColor);
+  font-size: 14px;
+}
+.appCaveat {
+  padding: 6px 0 2px;
+  text-align: center;
+  font-size: 11px;
+  color: var(--dsw-alias-label-tertiary, #999);
+}

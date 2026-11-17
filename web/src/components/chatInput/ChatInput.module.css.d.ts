@@ -20,6 +20,12 @@ declare const styles: {
   readonly "right": string;
   readonly "sendButton": string;
   readonly "disabled": string;
+  readonly app: string
+  readonly appRound: string
+  readonly appRoundOpen: string
+  readonly appPlus: string
+  readonly appPlusItem: string
+  readonly appCaveat: string
 };
 export = styles;
 
