@@ -1,0 +1,18 @@
+# 用法：docker compose up -d
+# 首个注册用户自动成为管理员；先在 VPS 上生成邀请码：
+#   docker compose exec ds-beta dsx invite create
+services:
+  ds-beta:
+    image: ghcr.io/sakuralaaa/ds-beta:latest
+    container_name: ds-beta
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:8080:8080"   # 前面接 Caddy/Nginx 做 HTTPS；不需要反代可改成 "8080:8080"
+    volumes:
+      - dsx-data:/data
+    environment:
+      - DSX_FILE_QUOTA_MB=200
+    mem_limit: 256m
+
+volumes:
+  dsx-data:
