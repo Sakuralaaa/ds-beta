@@ -78,6 +78,25 @@ export const ApiKeyField = ({ editor }: { editor: ApiKeyEditor }) => {
           </div>
         )}
         {showInput && form.error ? <div className={styles.error}>{form.error}</div> : null}
+        {showInput ? (
+          <div className={styles.apiKeyGuide}>
+            <div className={styles.apiKeyGuideTitle}>{t('apiKeyGuideTitle')}</div>
+            <ol className={styles.apiKeyGuideSteps}>
+              <li>{t('apiKeyGuideStep1')}</li>
+              <li>{t('apiKeyGuideStep2')}</li>
+              <li>{t('apiKeyGuideStep3')}</li>
+            </ol>
+            <a
+              className={styles.apiKeyGuideLink}
+              href="https://platform.deepseek.com/api_keys"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {t('apiKeyGuideLink')} ↗
+            </a>
+            <div className={styles.apiKeyGuideNote}>{t('apiKeyGuideNote')}</div>
+          </div>
+        ) : null}
       </div>
     </div>
   )

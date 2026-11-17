@@ -466,3 +466,27 @@
 .importLinkInput:focus {
   border-color: var(--dsw-alias-brand-primary);
 }
+
+.apiKeyGuide {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 4px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(77, 107, 254, 0.06);
+  font-size: 13px;
+  line-height: 20px;
+  color: var(--dsw-alias-label-secondary, #666);
+}
+.apiKeyGuideTitle { color: var(--dsw-alias-label-primary); font-weight: 500; }
+.apiKeyGuideSteps { margin: 0; padding-left: 18px; }
+.apiKeyGuideSteps li + li { margin-top: 2px; }
+.apiKeyGuideLink {
+  align-self: flex-start;
+  color: #4d6bfe;
+  font-weight: 500;
+  text-decoration: none;
+}
+.apiKeyGuideLink:hover { text-decoration: underline; }
+.apiKeyGuideNote { font-size: 12px; line-height: 18px; opacity: 0.8; }

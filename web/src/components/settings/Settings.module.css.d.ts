@@ -1,4 +1,9 @@
 declare const styles: {
+  readonly "apiKeyGuide": string;
+  readonly "apiKeyGuideTitle": string;
+  readonly "apiKeyGuideSteps": string;
+  readonly "apiKeyGuideLink": string;
+  readonly "apiKeyGuideNote": string;
   readonly "dialog": string;
   readonly "dialogMain": string;
   readonly "navigation": string;
