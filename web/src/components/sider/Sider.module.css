@@ -342,7 +342,8 @@
 .selectBar {
   display: flex;
   flex-shrink: 0;
-  justify-content: center;
+  align-items: center;
+  justify-content: space-around;
   height: 56px;
   border-top: 1px solid var(--dsw-alias-border-l1);
 }
@@ -461,4 +462,10 @@
 .collapsedLogo {
   display: flex;
   color: var(--dsw-alias-brand-primary);
+}
+
+.selectBarDivider {
+  width: 1px;
+  height: 18px;
+  background: var(--dsw-alias-border-l1);
 }

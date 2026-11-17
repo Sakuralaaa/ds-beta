@@ -14,6 +14,8 @@ import {
   setLocale,
   setLocation,
   setSearch,
+  setPinned,
+  setFontStep,
   setThemePreference,
   setThinking,
   setTtsVoice,
@@ -75,8 +77,8 @@ const markDirty = (key: string, type: 'upsert' | 'delete') => {
 }
 
 const settingsSnapshot = () => {
-  const { locale, themePreference, location, ttsVoice, thinking, search } = useSettings.getState()
-  return { locale, themePreference, location, ttsVoice, thinking, search }
+  const { locale, themePreference, location, ttsVoice, thinking, search, pinned, fontStep } = useSettings.getState()
+  return { locale, themePreference, location, ttsVoice, thinking, search, pinned, fontStep }
 }
 
 const ensureServerFiles = async () => {
@@ -206,6 +208,8 @@ const applyChange = async (change: Change) => {
       if (data.ttsVoice && data.ttsVoice !== current.ttsVoice) setTtsVoice(data.ttsVoice)
       if (typeof data.thinking === 'boolean' && data.thinking !== current.thinking) setThinking(data.thinking)
       if (typeof data.search === 'boolean' && data.search !== current.search) setSearch(data.search)
+      if (Array.isArray(data.pinned) && JSON.stringify(data.pinned) !== JSON.stringify(current.pinned)) setPinned(data.pinned)
+      if (data.fontStep !== undefined && data.fontStep !== current.fontStep) setFontStep(data.fontStep)
     } finally {
       applyingSettings = false
     }
@@ -274,7 +278,7 @@ export const startSync = async () => {
     previous = state
     if (applyingSettings) return
     if (state.apiKey !== prev.apiKey) markDirty('@keyvault', 'upsert')
-    const keys = ['locale', 'themePreference', 'location', 'ttsVoice', 'thinking', 'search'] as const
+    const keys = ['locale', 'themePreference', 'location', 'ttsVoice', 'thinking', 'search', 'pinned', 'fontStep'] as const
     if (keys.some((k) => state[k] !== prev[k])) markDirty('@settings', 'upsert')
   })
   // 首次同步：先拉服务器（含 Key），再推本机

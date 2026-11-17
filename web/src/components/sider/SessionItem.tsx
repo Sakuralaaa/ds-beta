@@ -1,7 +1,16 @@
 import clsx from 'clsx'
 import { memo, useState } from 'react'
 import { useTranslate } from '../../i18n/index.js'
-import { IconEditOutline16, IconEllipsisOutline16, IconTrashOutline16 } from '../base/icons.js'
+import {
+  IconEditOutline16,
+  IconEllipsisOutline16,
+  IconMultiSelectOutline16,
+  IconPinOutline16,
+  IconShareOutline16,
+  IconTrashOutline16,
+} from '../base/icons.js'
+import { togglePinned } from '../../services/settings.js'
+import { shareSession } from '../../utils/share.js'
 import { renameSession, selectSession } from '../../services/chat/store.js'
 import type { SessionSummary } from '../../services/chat/types.js'
 import { IconButton } from '../base/IconButton.js'
@@ -12,11 +21,15 @@ import styles from './SessionItem.module.css'
 export const SessionItem = memo(function SessionItem({
   session,
   active,
+  pinned,
   onDelete,
+  onMultiSelect,
 }: {
   session: SessionSummary
   active: boolean
+  pinned: boolean
   onDelete: () => void
+  onMultiSelect: () => void
 }) {
   const t = useTranslate()
   const [editing, setEditing] = useState(false)
@@ -64,6 +77,24 @@ export const SessionItem = memo(function SessionItem({
               label: t('sessionItemMenuRenameOption'),
               icon: <IconEditOutline16 />,
               onSelect: () => setEditing(true),
+            },
+            {
+              key: 'pin',
+              label: t(pinned ? 'unpin' : 'pin'),
+              icon: <IconPinOutline16 />,
+              onSelect: () => togglePinned([session.id]),
+            },
+            {
+              key: 'share',
+              label: t('share'),
+              icon: <IconShareOutline16 />,
+              onSelect: () => void shareSession(session.id, displayTitle),
+            },
+            {
+              key: 'multi',
+              label: t('multiSelect'),
+              icon: <IconMultiSelectOutline16 />,
+              onSelect: onMultiSelect,
             },
             {
               key: 'delete',

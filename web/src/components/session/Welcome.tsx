@@ -14,11 +14,10 @@ export const Welcome = () => {
       {isMobile ? <MobileHeader /> : null}
       <div className={styles.welcome}>
         <div className={styles.greeting}>
-          <WhaleLogo size={isMobile ? 32 : 36} className={styles.greetingLogo} />
-          {t('welcomeMessageChat250808')}
+          <WhaleLogo size={isMobile ? 28 : 36} className={styles.greetingLogo} />
+          {t(isMobile ? 'welcomeMessageMobile' : 'welcomeMessageChat250808')}
         </div>
         <ChatInput sessionId={null} />
-        {isMobile ? <div className={styles.caveat}>{t('contentCaveat')}</div> : null}
       </div>
     </div>
   )

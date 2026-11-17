@@ -59,8 +59,9 @@
   outline: none;
 }
 
+/* 触屏：同官方手机网页版，只有当前对话显示「…」 */
 @media (hover: none) {
-  .action {
+  .active .action {
     display: flex;
   }
 }

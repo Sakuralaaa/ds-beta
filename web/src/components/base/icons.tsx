@@ -567,3 +567,9 @@ export const IconShieldOutline16 = () => (
     <path d="m5.75 8 1.6 1.6 2.9-3.1" stroke="currentColor" strokeWidth="1.25" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 )
+
+export const IconPinOutline16 = () => (
+  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+    <path d="M9.6 1.9 14.1 6.4l-1.25.5-2.6 2.6.2 3-1.1 1.1-2.85-2.85L3 14.25 1.75 13l3.5-3.5L2.4 6.65l1.1-1.1 3 .2 2.6-2.6.5-1.25Z" stroke="currentColor" strokeWidth="1.2" strokeLinejoin="round" />
+  </svg>
+)

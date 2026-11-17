@@ -7,6 +7,7 @@ import {
   IconLogoutOutline16,
   IconMultiSelectOutline16,
   IconPanelLeftOutline16,
+  IconPinOutline16,
   IconSearchOutline16,
   IconSettingsOutline16,
   IconShieldOutline16,
@@ -15,7 +16,7 @@ import {
 } from '../base/icons.js'
 import { Menu } from '../base/Menu.js'
 import { SessionSearch } from './SessionSearch.js'
-import { setSiderCollapsed } from '../../services/settings.js'
+import { setSiderCollapsed, togglePinned, useSettings } from '../../services/settings.js'
 import { groupSessions } from '../../services/chat/sessionGroups.js'
 import { newChat, removeSession, useChatStore } from '../../services/chat/store.js'
 import type { SessionSummary } from '../../services/chat/types.js'
@@ -47,7 +48,8 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
     setSelected(new Set())
   }
   const [now, setNow] = useState(Date.now)
-  const groups = useMemo(() => groupSessions(sessions, now, t), [sessions, now, t])
+  const pinned = useSettings((state) => state.pinned)
+  const groups = useMemo(() => groupSessions(sessions, now, t, pinned), [sessions, now, t, pinned])
   const [deleting, setDeleting] = useState<SessionSummary | null>(null)
   const [deletePending, setDeletePending] = useState(false)
 
@@ -160,7 +162,12 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
                   key={session.id}
                   session={session}
                   active={session.id === activeId}
+                  pinned={pinned.includes(session.id)}
                   onDelete={() => setDeleting(session)}
+                  onMultiSelect={() => {
+                    setSelecting(true)
+                    setSelected(new Set([session.id]))
+                  }}
                 />
                 )
               )}
@@ -170,6 +177,19 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
       </div>
       {selecting ? (
         <div className={styles.selectBar}>
+          <button
+            type="button"
+            className={styles.selectBarButton}
+            disabled={!selected.size}
+            onClick={() => {
+              togglePinned([...selected])
+              exitSelect()
+            }}
+          >
+            <IconPinOutline16 />
+            {[...selected].length && [...selected].every((id) => pinned.includes(id)) ? t('unpin') : t('pin')}
+          </button>
+          <span className={styles.selectBarDivider} />
           <button
             type="button"
             className={styles.selectBarButton}

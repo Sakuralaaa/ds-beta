@@ -83,6 +83,8 @@ export const createConfig = ({
     new rspack.DefinePlugin({
       __API_ORIGIN__: JSON.stringify(apiOrigin),
       __DSX_SERVER__: JSON.stringify((process.env.DSX_SERVER ?? '').replace(/\/+$/, '')),
+      /** APK（Capacitor）构建设 DSX_APP=1，界面切到官方安卓 App 样式 */
+      __DSX_APP__: JSON.stringify(process.env.DSX_APP === '1'),
     }),
     new rspack.CopyRspackPlugin({
       patterns: [{ from: path.resolve(root, 'LICENSE'), to: 'LICENSE', toType: 'file' }],

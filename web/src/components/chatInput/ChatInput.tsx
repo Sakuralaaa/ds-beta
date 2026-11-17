@@ -228,7 +228,8 @@ const Input = ({ sessionId }: { sessionId: string | null }) => {
           </Tooltip>
         </div>
         <div className={styles.right}>
-          {isMobile ? (
+          {/* 官方网页版（含手机浏览器）没有语音输入；APK 版再打开 */}
+          {__DSX_APP__ ? (
           <VoiceButton
             status={voice.status}
             disabled={!voice.available}

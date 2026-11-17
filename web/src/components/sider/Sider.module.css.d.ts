@@ -24,6 +24,7 @@ declare const styles: {
   readonly "sectionHeader": string;
   readonly "selectBar": string;
   readonly "selectBarButton": string;
+  readonly "selectBarDivider": string;
   readonly "selectClose": string;
   readonly "selectHeader": string;
   readonly "selectItem": string;

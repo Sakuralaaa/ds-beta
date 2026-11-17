@@ -14,3 +14,5 @@ declare module 'prismjs/components/*' {}
 /** KaTeX 化学公式扩展通过副作用注册到 KaTeX */
 declare module 'katex/contrib/mhchem' {}
 declare const __DSX_SERVER__: string
+/** 是否为 APK 构建 */
+declare const __DSX_APP__: boolean

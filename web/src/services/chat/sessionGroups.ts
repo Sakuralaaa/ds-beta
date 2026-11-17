@@ -7,9 +7,18 @@ const DAY = 86_400_000
 const startOfDay = (time: number) => new Date(time).setHours(0, 0, 0, 0)
 
 /** 分组：今天 / 昨天 / 7 天内 / 30 天内 / 按月 */
-export const groupSessions = (sessions: SessionSummary[], now: number, t = translate) => {
+export const groupSessions = (
+  sessions: SessionSummary[],
+  now: number,
+  t = translate,
+  pinned: string[] = []
+) => {
   const groups: { key: string; label: string; sessions: SessionSummary[] }[] = []
+  const pinnedSet = new Set(pinned)
+  const top = pinned.map((id) => sessions.find((s) => s.id === id)).filter((s): s is SessionSummary => !!s)
+  if (top.length) groups.push({ key: 'pinned', label: t('pinned'), sessions: top })
   for (const session of sessions) {
+    if (pinnedSet.has(session.id)) continue
     const diff = Math.floor((now - startOfDay(session.updatedAt)) / DAY)
     const key =
       diff <= 0
