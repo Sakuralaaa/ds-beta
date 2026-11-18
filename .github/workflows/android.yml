@@ -11,7 +11,7 @@ on:
         default: https://deepseek.0520112.xyz
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: android-${{ github.ref }}
@@ -73,3 +73,13 @@ jobs:
           name: DeepSeek-Beta-apk
           path: android/DeepSeek-Beta.apk
           retention-days: 30
+
+      - name: Publish to release app-latest
+        if: github.ref == 'refs/heads/main'
+        working-directory: android
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view app-latest -R "$GITHUB_REPOSITORY" >/dev/null 2>&1 || \
+            gh release create app-latest -R "$GITHUB_REPOSITORY" --prerelease --title "DeepSeek Beta 安卓版（自动构建）" --notes "非官方实验版，每次推送自动更新。"
+          gh release upload app-latest DeepSeek-Beta.apk -R "$GITHUB_REPOSITORY" --clobber

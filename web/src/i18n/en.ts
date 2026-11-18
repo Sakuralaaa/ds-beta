@@ -157,6 +157,7 @@ export const en = {
   settingsAutoCollapseThinking: 'Auto-collapse thinking',
   systemSettings: 'Settings',
   menuAdmin: 'Admin console',
+  menuDownloadApp: 'Get the Android app',
   menuLogout: 'Log out',
   searchSessions: 'Search chats',
   searchSessionsEmpty: 'No matching chats',

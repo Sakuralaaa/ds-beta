@@ -149,6 +149,7 @@ export const zh = {
   settingsAutoCollapseThinking: '自动折叠思考内容',
   systemSettings: '系统设置',
   menuAdmin: '管理后台',
+  menuDownloadApp: '下载手机应用',
   menuLogout: '退出登录',
   searchSessions: '搜索对话',
   searchSessionsEmpty: '没有找到相关对话',

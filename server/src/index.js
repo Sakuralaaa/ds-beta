@@ -8,6 +8,7 @@ import { revokeInvite } from './invites.js'
 import { pull, push, subscribe } from './sync.js'
 import { getFile, listFileIds, putFile } from './files.js'
 import { fetchOfficialExport } from './importFetch.js'
+import { serveApp } from './appDownload.js'
 import { createInvites, deleteUser, listInvitesDetailed, listUsers, stats, updateUser } from './admin.js'
 
 const PORT = Number(process.env.PORT ?? 8080)
@@ -55,6 +56,7 @@ const requireAdmin = (user) => {
 
 const routes = [
   ['GET', /^\/api\/health$/, () => ({ ok: true, name: 'ds-beta' })],
+  ['GET', /^\/api\/app\/download$/, async (_req, _m, res) => { await serveApp(res); return undefined }],
   ['POST', /^\/api\/auth\/register$/, async (req) => { limit(req); return register(await readJson(req)) }],
   ['POST', /^\/api\/auth\/login$/, async (req) => { limit(req); return login(await readJson(req)) }],
   ['POST', /^\/api\/auth\/logout$/, (req) => { logout(authenticate(req)); return { ok: true } }],

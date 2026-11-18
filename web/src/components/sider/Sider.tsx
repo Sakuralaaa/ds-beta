@@ -3,6 +3,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslate } from '../../i18n/index.js'
 import {
   IconCloseOutline16,
+  IconDownloadOutline16,
   IconEllipsisOutline16,
   IconLogoutOutline16,
   IconMultiSelectOutline16,
@@ -215,6 +216,9 @@ export const Sider = ({ mobile = false }: { mobile?: boolean }) => {
               ...(isAdmin
                 ? [{ key: 'admin', label: t('menuAdmin'), icon: <IconShieldOutline16 />, onSelect: () => { closeMobileSider(); openAdmin() } }]
                 : []),
+              ...(__DSX_APP__
+                ? []
+                : [{ key: 'app', label: t('menuDownloadApp'), icon: <IconDownloadOutline16 />, onSelect: () => { window.location.href = '/api/app/download' } }]),
               { key: 'settings', label: t('systemSettings'), icon: <IconSettingsOutline16 />, onSelect: () => openSettings('general') },
               { key: 'logout', label: t('menuLogout'), icon: <IconLogoutOutline16 />, onSelect: () => void signOut() },
             ]}
